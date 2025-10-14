@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit USSD Menu</title>
+    <link href="theme/css/sb-admin-2.min.css" rel="stylesheet">
+    </head>
+<body class="container-fluid" style="padding-top: 2rem;">
+    <h1 class="h3 mb-2 text-gray-800" id="menu-name-header">Loading Menu...</h1>
+    <p>Here you can edit the items in your USSD menu.</p>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Menu Items</h6>
+                </div>
+                <div class="card-body" id="menu-items-container">
+                    </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Add New Item</h6>
+                </div>
+                <div class="card-body">
+                    <form id="add-item-form">
+                        <input type="hidden" id="parent-item-id" value=""> <div class="form-group">
+                            <label>Option Trigger (e.g., 1, 2, or ROOT for the first menu)</label>
+                            <input type="text" id="option-trigger" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Response Type</label>
+                            <select id="response-type" class="form-control">
+                                <option value="CON">CON (Continue session)</option>
+                                <option value="END">END (End session)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Response Text</label>
+                            <textarea id="response-text" class="form-control" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Item</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="edit-menu.js" defer></script>
+</body>
+</html>
