@@ -1,0 +1,30 @@
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/qgloball/coms.q4globalltd.com"
+PassengerBaseURI "/"
+PassengerNodejs "/home/qgloball/nodevenv/coms.q4globalltd.com/20/bin/node"
+PassengerAppType node
+PassengerStartupFile index.js
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION BEGIN
+<IfModule Litespeed>
+SetEnv APP_URL coms.q4globalltd.com
+SetEnv AT_API_KEY atsk_9628202e19f72c441b47165c3b67bc164f6ebcbdae15606559c3d9c56a064c34e80696b0
+SetEnv AT_USERNAME q4gl-ml
+SetEnv EMAIL_PASS P@ssw0rds2479
+SetEnv EMAIL_USER support@q4globalltd.com
+SetEnv JWT_SECRET e3f2a1d8c7b5964f0a9e8d7c6b5a4938271f0e5d4c3b2a1908f7e6d5c4b3a291
+SetEnv PAYSTACK_SECRET_KEY sk_live_0d0810b806a84439057884df33b5cd2a0ae82ae4
+SetEnv SMTP_PASS P@ssw0rds2479
+SetEnv SMTP_PORT 465
+SetEnv SMTP_USER support@q4globalltd.com
+SetEnv SQUAD_PUBLIC_KEY pk_ad1cfe5a66704eecf9e4fe4154bde456aa4e01a4
+SetEnv SQUAD_SECRET_KEY sk_ad1cfe5a66704eecfe8f87343cb1ef49a55e72b7
+SetEnv SMTP_HOST mail.q4globalltd.com
+</IfModule>
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION END
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php80” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php80 .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit
