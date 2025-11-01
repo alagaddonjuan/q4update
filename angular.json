@@ -22,7 +22,16 @@
               {
                 "glob": "**/*",
                 "input": "public"
+<<<<<<< HEAD
+                },
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "/assets"
+                }
+=======
               }
+>>>>>>> origin/angular-version-branch
             ],
             "styles": [
               "src/styles.css"
@@ -79,6 +88,14 @@
               {
                 "glob": "**/*",
                 "input": "public"
+<<<<<<< HEAD
+              },
+          {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "/assets"
+=======
+>>>>>>> origin/angular-version-branch
               }
             ],
             "styles": [

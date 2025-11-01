@@ -1,2 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
+<<<<<<< HEAD
 @import "tailwindcss";
+
+/* Custom global styles  */
+.bg-primary {
+  background: linear-gradient(186.15deg, #1B7165 57.02%, #3B9A8D 63.71%);
+}
+.color-primary {
+    color: rgba(23, 129, 115, 0.9);
+}
+=======
+@import "tailwindcss";
+>>>>>>> origin/angular-version-branch
