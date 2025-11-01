@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+<<<<<<< HEAD
 export const routes: Routes = [
     {path: 'login', loadComponent: () => import('./login/login').then(m => m.Login)},
     {path: 'user', loadComponent: () => import('./user-dashboard/user-dashboard').then(m => m.UserDashboard)},
@@ -11,3 +12,6 @@ export const routes: Routes = [
 
 ];
  
+=======
+export const routes: Routes = [];
+>>>>>>> origin/angular-version-branch
