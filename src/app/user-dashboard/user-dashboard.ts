@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
-import { BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router';
+
 
 Chart.register(...registerables);
 
@@ -29,6 +30,7 @@ interface Activity {
 export class UserDashboard implements OnInit, AfterViewInit {
 
 isSidebarOpen = false;
+constructor(private router: Router) {}
 
 @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
   
@@ -61,8 +63,14 @@ isSidebarOpen = false;
   getInitials(name: string): string {
     return name.split(' ').map(n => n[0]).join('');
   }
-
-  ngOnInit(): void {}
+  navigateToProfilePage() {
+    this.router.navigate(['/profile']);
+  }
+  signOut() {
+    console.log('Logging out...');
+  }
+  ngOnInit(): void {
+  }
 
   ngAfterViewInit(): void {
     setTimeout(() => {

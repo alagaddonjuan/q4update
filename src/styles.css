@@ -1,6 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
-<<<<<<< HEAD
 @import "tailwindcss";
+
+summary::-webkit-details-marker {
+  display: none;
+}
+summary::marker {
+  display: none;
+  content: none; /* or content: ""; for some browsers */
+}
 
 /* Custom global styles  */
 .bg-primary {
@@ -9,6 +16,3 @@
 .color-primary {
     color: rgba(23, 129, 115, 0.9);
 }
-=======
-@import "tailwindcss";
->>>>>>> origin/angular-version-branch
