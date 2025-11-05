@@ -1,2 +1,71 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+@theme {
+  --font-*: initial;
+  --font-sans: "Poppins", "sans-serif";
+
+  
+  --color-primary: radial-gradient(90deg, #127D66DE 13%, #19B896 87%);
+  @keyframes slide-in-down {
+    from { visibility: visible; transform: translate3d(0, -100%, 0); }
+    to { transform: translate3d(0, 0, 0); }
+  }
+  @keyframes slide-in-up {
+    from { visibility: visible; transform: translate3d(0, 100%, 0); }
+    to { transform: translate3d(0, 0, 0); }
+  }
+  @keyframes slide-in-left {
+    from { visibility: visible; transform: translate3d(-100%, 0, 0); }
+    to { transform: translate3d(0, 0, 0); }
+  }
+  @keyframes slide-in-right {
+    from { visibility: visible; transform: translate3d(100%, 0, 0); }
+    to { transform: translate3d(0, 0, 0); }
+  }
+  @keyframes slide-out-down {
+    from { transform: translate3d(0, 0, 0); }
+    to { visibility: hidden; transform: translate3d(0, 100%, 0); }
+  }
+  @keyframes slide-out-up {
+    from { transform: translate3d(0, 0, 0); }
+    to { visibility: hidden; transform: translate3d(0, -100%, 0); }
+  }
+  @keyframes slide-out-left {
+    from { transform: translate3d(0, 0, 0); }
+    to { visibility: hidden; transform: translate3d(-100%, 0, 0); }
+  }
+  @keyframes slide-out-right {
+    from { transform: translate3d(0, 0, 0); }
+    to { visibility: hidden; transform: translate3d(100%, 0, 0); }
+  }
+  @keyframes slide-down {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(0, 100%, 0); }
+  }
+  @keyframes slide-up {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(0, -100%, 0); }
+  }
+  @keyframes slide-left {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-100%, 0, 0); }
+  }
+  @keyframes slide-right {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(100%, 0, 0); }
+  }
+
+  --animate-slideindown: slide-in-down 5s ease-in-out;
+  --animate-slideinup: slide-in-up 3s ease-in-out;
+  --animate-slideinleft: slide-in-left 3s ease-in-out;
+  --animate-slideinright: slide-in-right 3s ease-in-out;
+  --animate-slideoutdown: slide-out-down 3s ease-in-out infinite;
+  --animate-slideoutup: slide-out-up 3s ease-in-out infinite;
+  --animate-slideoutleft: slide-out-left 3s ease-in-out infinite;
+  --animate-slideoutright: slide-out-right 3s ease-in-out infinite;
+  --animate-slidedown: slide-down 3s ease-in-out infinite;
+  --animate-slideup: slide-up 3s ease-in-out infinite;
+  --animate-slideleft: slide-left 3s ease-in-out infinite;
+  --animate-slideright: slide-right 3s ease-in-out infinite;
+}
