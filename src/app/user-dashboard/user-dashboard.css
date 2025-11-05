@@ -1,0 +1,29 @@
+.bg-primary {
+    background: rgba(230, 230, 230, 1);
+
+}
+.aside-bg {
+    background: rgba(18, 125, 102, 1);
+
+}
+.bg-secondary {
+    background: rgba(255, 255, 255, 1);
+}
+.right-card {
+    background: radial-gradient(37.74% 69.06% at 51.25% 53.81%, #19B896 32.46%, rgba(18, 125, 102, 0.87) 84.78%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
+linear-gradient(175.75deg, rgba(88, 228, 197, 0.2) 49.86%, rgba(255, 255, 255, 0.2) 96.54%);
+
+}
+.left-card {
+   background: radial-gradient(37.74% 69.06% at 51.25% 53.81%, #35A58D 32.46%, rgba(18, 125, 102, 0.87) 84.78%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
+linear-gradient(175.75deg,  rgba(88, 228, 197, 0.2) 49.86%, rgba(255, 255, 255, 0.2) 96.54%);
+}
+.tel-card {
+    position: relative;
+    background: rgba(53, 165, 141, 1);
+    /* background: rgba(88, 228, 197, 1); */
+    backdrop-filter: blur(4px); /* Light blur; adjust as needed */
+    border-radius: 50%; /* rounded-lg */
+    box-shadow: 0 0 15px rgba(53, 165, 141, 1) ; /* Glowing shadow in same color */    
+}
+
