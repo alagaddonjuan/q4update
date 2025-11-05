@@ -1,2 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+summary::-webkit-details-marker {
+  display: none;
+}
+summary::marker {
+  display: none;
+  content: none; /* or content: ""; for some browsers */
+}
+
+/* Custom global styles  */
+.bg-primary {
+  background: linear-gradient(186.15deg, #1B7165 57.02%, #3B9A8D 63.71%);
+}
+.color-primary {
+    color: rgba(23, 129, 115, 0.9);
+}
