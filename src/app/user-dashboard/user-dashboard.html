@@ -1,0 +1,182 @@
+   <div class="flex min-h-screen bg-gray-50">
+      <!-- Mobile Toggle Button -->
+      <button
+        (click)="toggleSidebar()"
+        class="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 bg-teal-700 text-white rounded-lg flex items-center justify-center shadow-lg hover:bg-teal-800 transition-colors"
+        aria-label="Toggle sidebar">
+        <svg *ngIf="!isSidebarOpen" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+        <svg *ngIf="isSidebarOpen" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Overlay for mobile -->
+      <div
+        *ngIf="isSidebarOpen"
+        (click)="closeSidebar()"
+        class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30">
+      </div>
+
+      <!-- Sidebar -->
+      <aside [class]="'w-44 md:w-36 aside-bg text-black flex flex-col flex-shrink-0 fixed lg:static inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out ' + (isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0')">
+        <img src="/assets/logo.png" alt="company logo" class="w-28 md:w-24 mx-auto my-4 md:my-6 ">
+        <nav class="flex-1 py-2 md:py-4 pl-2">
+          <a href="" class="flex gap-2 items-center py-2 md:py-3 px-2 transition-all duration-200 ">
+            <img src="/assets/user/Group.png" alt="">
+            <span class="text-[9px] md:text-xs text-white pl-1">Dashboard</span>
+          </a>
+          <a href="" class="flex gap-2 items-center py-2 md:py-3 px-2 transition-all duration-200 hover:bg-white-500 hover:text-white group cursor-pointer ">
+            <img src="/assets/user/music-icon.png" alt="" class="group-hover:brightness-0 group-hover:invert">
+            <span class="text-[9px] md:text-xs">Service</span>
+          </a>
+          <a href="" class="flex gap-2 items-center py-2 md:py-3 px-2 transition-all duration-200 hover:bg-white-500 hover:text-white group cursor-pointer">
+            <img src="/assets/user/vector-ussd.png" alt="" class="group-hover:brightness-0 group-hover:invert">
+            <span class="text-[9px] md:text-xs">USSD</span>
+          </a>
+          <a href="" class="flex gap-2 items-center py-2 md:py-3 px-2 transition-all duration-200 hover:bg-white-500 hover:text-white group cursor-pointer ">
+            <img src="/assets/user/stash_billing-info.png" alt="" class="group-hover:brightness-0 group-hover:invert">
+            <span class="text-[9px] md:text-xs">Menu Builder</span>
+          </a>
+          <a href="" class="flex gap-2 items-center py-2 md:py-3 px-2 transition-all duration-200 hover:bg-white-500 hover:text-white group cursor-pointer ">
+            <img src="/assets/user/stash_billing-info.png" alt="" class="group-hover:brightness-0 group-hover:invert">
+            <span class="text-[9px] md:text-xs">Billing</span>
+          </a>
+          <a href="" class="flex gap-2 items-center py-2 md:py-3 px-2 transition-all duration-200 hover:bg-white-500 hover:text-white group cursor-pointer">
+            <img src="/assets/user/stash_billing-info.png" alt="" class="group-hover:brightness-0 group-hover:invert">
+            <span class="text-[9px] md:text-xs">Team</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 overflow-auto bg-primary w-full lg:w-auto">
+        <!-- Header -->
+        <header class="px-3 md:px-6 py-3 md:py-4 flex justify-between items-center sticky top-0 z-10">
+          <h1 class="text-lg md:text-2xl font-semibold text-gray-800 ml-14 lg:ml-0">Dashboard</h1>
+          <div class="flex items-center gap-2 md:gap-3">
+            <span class="text-xs md:text-sm text-gray-600 hidden sm:inline">Jide Ayomide</span>
+            <details class="relative inline-block">
+                <summary class=" list-none cursor-pointer  focus:outline-none">
+              <img class="w-8 h-8 md:w-10 md:h-10 aspect-square rounded-lg flex items-center justify-center " src="/assets/profile-pic.png" alt="User Profile">
+            </summary>
+            <ul id="dropdownMenu"
+              class="absolute block shadow-lg top-full right-0 mb-2  bg-white py-2 z-[1000] min-w-full w-max rounded-lg max-h-96 overflow-auto">
+              <li 
+                (click)="navigateToProfilePage()"
+                class="dropdown-item py-2.5 px-5 flex items-center hover:bg-slate-100 text-slate-600 font-medium text-sm cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4 mr-3" viewBox="0 0 512 512">
+                  <path
+                    d="M337.711 241.3a16 16 0 0 0-11.461 3.988c-18.739 16.561-43.688 25.682-70.25 25.682s-51.511-9.121-70.25-25.683a16.007 16.007 0 0 0-11.461-3.988c-78.926 4.274-140.752 63.672-140.752 135.224v107.152C33.537 499.293 46.9 512 63.332 512h385.336c16.429 0 29.8-12.707 29.8-28.325V376.523c-.005-71.552-61.831-130.95-140.757-135.223zM446.463 480H65.537V376.523c0-52.739 45.359-96.888 104.351-102.8C193.75 292.63 224.055 302.97 256 302.97s62.25-10.34 86.112-29.245c58.992 5.91 104.351 50.059 104.351 102.8zM256 234.375a117.188 117.188 0 1 0-117.188-117.187A117.32 117.32 0 0 0 256 234.375zM256 32a85.188 85.188 0 1 1-85.188 85.188A85.284 85.284 0 0 1 256 32z"
+                    data-original="#000000"></path>
+                </svg>
+                View profile
+              </li>
+              <li
+                (click)="signOut()"
+                class="dropdown-item py-2.5 px-5 flex items-center hover:bg-slate-100 text-slate-600 font-medium text-sm cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4 mr-3" viewBox="0 0 6.35 6.35">
+                  <path
+                    d="M3.172.53a.265.266 0 0 0-.262.268v2.127a.265.266 0 0 0 .53 0V.798A.265.266 0 0 0 3.172.53zm1.544.532a.265.266 0 0 0-.026 0 .265.266 0 0 0-.147.47c.459.391.749.973.749 1.626 0 1.18-.944 2.131-2.116 2.131A2.12 2.12 0 0 1 1.06 3.16c0-.65.286-1.228.74-1.62a.265.266 0 1 0-.344-.404A2.667 2.667 0 0 0 .53 3.158a2.66 2.66 0 0 0 2.647 2.663 2.657 2.657 0 0 0 2.645-2.663c0-.812-.363-1.542-.936-2.03a.265.266 0 0 0-.17-.066z"
+                    data-original="#000000"></path>
+                </svg>
+                Logout
+              </li>
+            </ul>
+            </details>
+   
+          </div>
+        </header>
+
+        <div class="p-3 md:p-4 lg:p-6 max-w-[1600px] mx-auto">
+          <!-- Hero Cards -->
+          <div class="grid grid-cols-[1.7fr_1fr] lg:grid-cols-2[1.7fr_1fr] gap-3 md:gap-4 mb-3 md:mb-4">
+            <!-- Left Card -->
+            <div class="left-card rounded-xl md:rounded-2xl p-5 md:p-6 text-white grid grid-cols-[7fr_3fr]">
+              <div class="pt-2">
+                <h2 class="text-sm md:text-base lg:text-lg font-semibold mb-1">Lorem ipsum dolor sit amet, consectetur adipiscing</h2>
+                <p class="text-teal-100 text-xs mb-2 md:mb-3">Lorem tekst dolor sit</p>
+                <button class="bg-secondary text-teal-600 px-4 md:px-5 py-1.5 rounded-lg text-xs md:text-sm font-medium hover:bg-teal-50">
+                  Learn More
+                </button>
+              </div>
+              <div class="tel-card w-46 h-46 rounded-full flex items-center justify-center">
+                <div class="w-40 h-40 rounded-full flex items-center justify-center">
+                  <img src="assets/user/tel-screen.png" alt="telephone illustration" class="ml-4">
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Card -->
+            <div class="right-card rounded-xl md:rounded-2xl md:p-4 text-white flex flex-col relative overflow-hidden gap-2">
+              <div class="w-14 h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 bg-opacity-30 rounded-lg flex items-center justify-center">
+                <img src="assets/user/card-image.png" alt="card illustration">
+              </div>
+              <div>
+                <p class="text-teal-100 text-xs md:text-sm mb-1">My balance</p>
+                <p class="text-2xl md:text-3xl font-bold">$20,400.00</p>
+              </div>
+              <img src="assets/user/Vector.png" class="absolute ">
+            </div>
+          </div>
+
+          <!-- Stats Cards -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-3 md:mb-4">
+            <div *ngFor="let stat of stats" class="bg-secondary rounded-lg md:rounded-xl p-3 md:p-4 lg:p-5 shadow-sm">
+              <div class="flex items-start justify-between mb-2 md:mb-3">
+                <div class="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-lg flex items-center justify-center">
+                  <img [src]="stat.icon" alt="stat.title">
+                </div>
+              </div>
+              <h3 class="text-gray-800 font-semibold text-xs md:text-sm mb-0.5 md:mb-1">{{stat.title}}</h3>
+              <p class="text-gray-500 text-[10px] md:text-xs">{{stat.value}}</p>
+            </div>
+          </div>
+
+          <!-- Bottom Section -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4">
+            <!-- Usage Statics Chart -->
+            <div class="lg:col-span-2 bg-secondary rounded-lg md:rounded-xl p-3 md:p-4 lg:p-6 shadow-sm">
+              <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4">
+                <h2 class="text-sm md:text-base lg:text-lg font-semibold text-gray-800">Usage Statics</h2>
+                <button class="px-3 py-1.5 md:px-4 md:py-2 border border-gray-300 rounded-lg text-xs md:text-sm text-gray-600 hover:bg-gray-50 w-fit">
+                  Filter by <span class="color-primary font-bold">7 days</span>
+                </button>
+              </div>
+              <div class="h-48 md:h-56 lg:h-64">
+                <canvas #chartCanvas></canvas>
+              </div>
+            </div>
+
+            <!-- Last Activity -->
+            <div class="bg-white rounded-lg md:rounded-xl p-3 md:p-4 lg:p-6 shadow-sm">
+              <div class="flex justify-between items-center mb-3 md:mb-4">
+                <h2 class="text-sm md:text-base lg:text-lg font-semibold text-gray-800">Last activity</h2>
+                <button class="text-teal-600 text-[10px] md:text-xs hover:text-teal-700">See all</button>
+              </div>
+              <div class="space-y-2 md:space-y-3 max-h-64 lg:max-h-96 overflow-y-auto">
+                <div *ngFor="let activity of activities" class="flex items-start gap-2 md:gap-3 pb-2 md:pb-3 border-b border-gray-100 last:border-0">
+                  <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] md:text-xs font-semibold flex-shrink-0">
+                    {{getInitials(activity.user)}}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-start mb-0.5 md:mb-1">
+                      <p class="text-xs md:text-sm font-medium text-gray-800 truncate pr-2">{{activity.user}}</p>
+                      <span class="text-[10px] md:text-xs text-gray-400 whitespace-nowrap">{{activity.time}}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <p class="text-[10px] md:text-xs text-gray-600 truncate">{{activity.action}}</p>
+                      <p class="text-[10px] md:text-xs text-red-500 mt-0.5 md:mt-1 truncate">{{activity.type}}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
