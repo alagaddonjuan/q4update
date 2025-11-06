@@ -1,4 +1,4 @@
-import { Component,OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -10,13 +10,13 @@ import { Router } from '@angular/router';
   styleUrl: './forgot-password.css'
 })
 export class ForgotPassword implements OnInit {
- forgotPasswordForm!: FormGroup;
+  forgotPasswordForm!: FormGroup;
   isSubmitting = false;
   showSuccessMessage = false;
   illustrationPath: string = 'assets/form-image.png';
-  
 
-  constructor(private fb: FormBuilder,private router: Router) {}
+
+  constructor(private fb: FormBuilder, private router: Router) { }
 
   ngOnInit(): void {
     this.forgotPasswordForm = this.fb.group({
@@ -28,18 +28,18 @@ export class ForgotPassword implements OnInit {
     if (this.forgotPasswordForm.valid) {
       this.isSubmitting = true;
       console.log('Password reset requested for:', this.forgotPasswordForm.value.email);
-      
+
       // Simulate API call
       setTimeout(() => {
         this.isSubmitting = false;
         this.showSuccessMessage = true;
-        
+
         // Hide success message after 5 seconds
         setTimeout(() => {
           this.showSuccessMessage = false;
         }, 5000);
       }, 1500);
-      
+
       // Handle password reset logic here
     } else {
       // Mark field as touched to show validation error

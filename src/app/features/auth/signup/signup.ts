@@ -9,13 +9,13 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
   styleUrl: './signup.css'
 })
 export class Signup implements OnInit {
-   signupForm!: FormGroup;
+  signupForm!: FormGroup;
   showPassword = false;
-    // Path for the illustration image on the left.
+  // Path for the illustration image on the left.
   illustrationPath: string = 'assets/form-image.png'
 
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) { }
 
   ngOnInit(): void {
     this.signupForm = this.fb.group({
