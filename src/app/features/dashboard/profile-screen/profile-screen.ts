@@ -23,19 +23,8 @@ export class ProfileScreen  implements OnInit {
   apiKeys: ApiKey[] = [];
   newApiKeyName: string = '';
   mobileMenuOpen: boolean = false;  
-  isSidebarOpen = false;
-
-   toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
-  }
-
-  closeSidebar() {
-    this.isSidebarOpen = false;
-  }
-
-  getInitials(name: string): string {
-    return name.split(' ').map(n => n[0]).join('');
-  }
+  
+  
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {

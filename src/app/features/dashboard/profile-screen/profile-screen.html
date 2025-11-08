@@ -1,72 +1,8 @@
    <div class="flex min-h-screen  bg-gray-50">
-      <!-- Mobile Toggle Button -->
-      <button
-        (click)="toggleSidebar()"
-        class="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 bg-teal-700 text-white rounded-lg flex items-center justify-center shadow-lg hover:bg-teal-800 transition-colors"
-        aria-label="Toggle sidebar">
-        <svg *ngIf="!isSidebarOpen" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-        <svg *ngIf="isSidebarOpen" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-
-      <!-- Overlay for mobile -->
-      <div
-        *ngIf="isSidebarOpen"
-        (click)="closeSidebar()"
-        class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30">
-      </div>
-
-      <!-- Sidebar -->
-      <aside [class]="'w-44 md:w-36 bg-teal-700 text-black flex flex-col flex-shrink-0 fixed lg:static inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out ' + (isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0')">
-        <img src="/assets/logo.png" alt="company logo" class="w-28 md:w-24 mx-auto my-4 md:my-6 ">
-        <nav class="flex-1 py-2 md:py-4 pl-2">
-          <a href="" class="flex gap-2 items-center py-2 md:py-3 px-2 transition-all duration-200 ">
-            <img src="/assets/user/Group.png" alt="">
-            <span class="text-[9px] md:text-xs text-white pl-1">Dashboard</span>
-          </a>
-          <a href="" class="flex gap-2 items-center py-2 md:py-3 px-2 transition-all duration-200 hover:bg-white-500 hover:text-white group cursor-pointer ">
-            <img src="/assets/user/music-icon.png" alt="" class="group-hover:brightness-0 group-hover:invert">
-            <span class="text-[9px] md:text-xs">Service</span>
-          </a>
-          <a href="" class="flex gap-2 items-center py-2 md:py-3 px-2 transition-all duration-200 hover:bg-white-500 hover:text-white group cursor-pointer">
-            <img src="/assets/user/vector-ussd.png" alt="" class="group-hover:brightness-0 group-hover:invert">
-            <span class="text-[9px] md:text-xs">USSD</span>
-          </a>
-          <a href="" class="flex gap-2 items-center py-2 md:py-3 px-2 transition-all duration-200 hover:bg-white-500 hover:text-white group cursor-pointer ">
-            <img src="/assets/user/stash_billing-info.png" alt="" class="group-hover:brightness-0 group-hover:invert">
-            <span class="text-[9px] md:text-xs">Menu Builder</span>
-          </a>
-          <a href="" class="flex gap-2 items-center py-2 md:py-3 px-2 transition-all duration-200 hover:bg-white-500 hover:text-white group cursor-pointer ">
-            <img src="/assets/user/stash_billing-info.png" alt="" class="group-hover:brightness-0 group-hover:invert">
-            <span class="text-[9px] md:text-xs">Billing</span>
-          </a>
-          <a href="" class="flex gap-2 items-center py-2 md:py-3 px-2 transition-all duration-200 hover:bg-white-500 hover:text-white group cursor-pointer">
-            <img src="/assets/user/stash_billing-info.png" alt="" class="group-hover:brightness-0 group-hover:invert">
-            <span class="text-[9px] md:text-xs">Team</span>
-          </a>
-        </nav>
-      </aside>
 
       <!-- Main Content -->
       <main class="flex-1 overflow-auto bg-primary px-5 w-full lg:w-auto">
-        <!-- Header -->
-        <header class="px-3 md:px-6 py-3 md:py-4 flex justify-between items-center sticky top-0 z-10">
-        <div class="flex flex-col">
-            <h1 class="text-lg md:text-2xl font-semibold text-gray-800 ml-14 lg:ml-0">Welcome Amanda</h1>
-            <span class="text-gray-900">Tue, 18 aug 2025</span>
-        </div>
-          <div class="flex items-center gap-2 md:gap-3">
-            <span class="text-xs md:text-sm text-gray-600 hidden sm:inline">Jide Ayomide</span>
-          <img class="w-8 h-8 md:w-10 md:h-10 aspect-square rounded-lg flex items-center justify-center " src="/assets/profile-pic.png" alt="User Profile">
-          </div>
-        </header>
-        <!-- Content Area -->
+
         <div>
           <!-- Info Banner -->
           <div class="bg-teal-600 text-white rounded-lg p-4 mt-4 h-16 flex items-center gap-3 relative overflow-hidden">

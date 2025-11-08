@@ -1,0 +1,146 @@
+    <div class="min-h-screen bg-gray-50 p-6">
+      <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-light text-gray-800 mb-2">Editing: {{ menuName }}</h1>
+        <p class="text-gray-600 mb-6">Here you can edit the items in your USSD menu.</p>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Menu Items Section -->
+          <div class="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-2xl font-semibold text-teal-700 mb-6">Menu Items</h2>
+            
+            <div class="space-y-6">
+              <div *ngFor="let item of menuItems; let i = index" class="border-l-4 border-gray-300 pl-4">
+                <div class="mb-4">
+                  <h3 class="font-semibold text-gray-800 mb-2">
+                    Trigger: {{ item.trigger }} 
+                    <span class="text-blue-600">({{ item.responseType }})</span>
+                  </h3>
+                  <p class="text-gray-600 italic mb-2">{{ getFirstLine(item.responseText) }}</p>
+                  <div *ngIf="hasMultipleLines(item.responseText)" class="text-gray-600 text-sm ml-4">
+                    <p *ngFor="let line of getRestLines(item.responseText)">{{ line }}</p>
+                  </div>
+                  
+                  <div class="flex gap-2 mt-3">
+                    <button
+                      (click)="addChild(item)"
+                      class="bg-gray-500 hover:bg-gray-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors"
+                    >
+                      Add Child
+                    </button>
+                    <button
+                      (click)="editItem(item)"
+                      class="bg-cyan-500 hover:bg-cyan-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      (click)="deleteItem(i)"
+                      class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Child Items -->
+                <div *ngIf="item.children && item.children.length > 0" class="ml-6 space-y-4 mt-4">
+                  <div *ngFor="let child of item.children; let j = index" class="border-l-4 border-gray-200 pl-4">
+                    <h4 class="font-semibold text-gray-700 mb-2">
+                      Trigger: {{ child.trigger }} 
+                      <span class="text-blue-600">({{ child.responseType }})</span>
+                    </h4>
+                    <p class="text-gray-600 italic mb-2">{{ child.responseText }}</p>
+                    
+                    <div class="flex gap-2 mt-2">
+                      <button
+                        (click)="addChild(child)"
+                        class="bg-gray-500 hover:bg-gray-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors"
+                      >
+                        Add Child
+                      </button>
+                      <button
+                        (click)="editItem(child)"
+                        class="bg-cyan-500 hover:bg-cyan-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        (click)="deleteChild(item, j)"
+                        class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Add New Item Form -->
+          <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-2xl font-semibold text-teal-700 mb-6">Add New Item</h2>
+            
+            <form [formGroup]="addItemForm" (ngSubmit)="addItem()">
+              <div class="mb-4">
+                <label class="block text-gray-600 text-sm mb-2">
+                  Option Trigger (e.g., 1, 2, or ROOT for the first menu)
+                </label>
+                <input
+                  type="text"
+                  formControlName="trigger"
+                  placeholder="ROOT"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  [ngClass]="{
+                    'border-red-500': addItemForm.get('trigger')?.invalid && addItemForm.get('trigger')?.touched
+                  }"
+                />
+                <p *ngIf="addItemForm.get('trigger')?.invalid && addItemForm.get('trigger')?.touched" 
+                   class="text-red-500 text-xs mt-1">
+                  Trigger is required
+                </p>
+              </div>
+              
+              <div class="mb-4">
+                <label class="block text-gray-600 text-sm mb-2">
+                  Response Type
+                </label>
+                <select
+                  formControlName="responseType"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="CON">CON (Continue session)</option>
+                  <option value="END">END (End session)</option>
+                </select>
+              </div>
+              
+              <div class="mb-6">
+                <label class="block text-gray-600 text-sm mb-2">
+                  Response Text
+                </label>
+                <textarea
+                  formControlName="responseText"
+                  rows="6"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  [ngClass]="{
+                    'border-red-500': addItemForm.get('responseText')?.invalid && addItemForm.get('responseText')?.touched
+                  }"
+                ></textarea>
+                <p *ngIf="addItemForm.get('responseText')?.invalid && addItemForm.get('responseText')?.touched" 
+                   class="text-red-500 text-xs mt-1">
+                  Response text is required
+                </p>
+              </div>
+              
+              <button
+                type="submit"
+                [disabled]="!addItemForm.valid"
+                class="w-full bg-teal-700 hover:bg-teal-800 text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Add Item
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
