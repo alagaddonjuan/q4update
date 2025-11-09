@@ -1,105 +1,104 @@
-    <div class="min-h-screen  p-4">
-      <div class="max-w-7xl mx-auto">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <!-- Buy Tokens Card -->
-          <div class="bg-white rounded-lg shadow-sm p-6">
-            <h2 class="text-2xl font-semibold text-teal-700  mb-4">Buy Tokens</h2>
-            
-            <form [formGroup]="buyTokensForm" (ngSubmit)="handlePayment('paystack')">
-              <div class="mb-4">
-                <label class="block text-gray-600 text-sm mb-2">
-                  Amount (NGN)
-                </label>
-                <input
-                  type="number"
-                  formControlName="amount"
-                  placeholder="1000"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  [ngClass]="{
-                    'border-red-500': buyTokensForm.get('amount')?.invalid && buyTokensForm.get('amount')?.touched
-                  }"
-                />
-                <p *ngIf="buyTokensForm.get('amount')?.invalid && buyTokensForm.get('amount')?.touched" 
-                   class="text-red-500 text-xs mt-1">
-                  Please enter a valid amount
-                </p>
-              </div>
-              
-              <div class="flex gap-3">
-                <button
-                  type="submit"
-                  [disabled]="!buyTokensForm.valid"
-                  class="bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Pay with Paystack
-                </button>
-                <button
-                  type="button"
-                  (click)="handlePayment('q4')"
-                  [disabled]="!buyTokensForm.valid"
-                  class="bg-teal-700 hover:bg-teal-800 text-white font-medium py-2 px-6 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Pay with Q4 Payment
-                </button>
-              </div>
-            </form>
+<div class="min-h-screen p-4">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <!-- Buy Tokens Card -->
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <h2 class="text-2xl font-semibold text-teal-700 mb-4">Buy Tokens</h2>
+
+        <form [formGroup]="buyTokensForm" (ngSubmit)="handlePayment('paystack')">
+          <div class="mb-4">
+            <label class="block text-gray-600 text-sm mb-2"> Amount (NGN) </label>
+            <input
+              type="number"
+              formControlName="amount"
+              placeholder="1000"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              [ngClass]="{
+                'border-red-500':
+                  buyTokensForm.get('amount')?.invalid && buyTokensForm.get('amount')?.touched
+              }"
+            />
+            @if (buyTokensForm.get('amount')?.invalid && buyTokensForm.get('amount')?.touched) {
+            <p class="text-red-500 text-xs mt-1">Please enter a valid amount</p>
+            }
           </div>
-          
-          <!-- Conversion Rate Card -->
-          <div class="bg-white rounded-lg shadow-sm p-6">
-            <h2 class="text-2xl font-semibold text-teal-700 mb-4">Conversion Rate</h2>
-            
-            <p class="text-gray-600 mb-3">
-              Your price is currently <span class="font-semibold text-gray-800">1 Token</span> for every 
-              <span class="font-semibold text-gray-800">₦1.00</span>.
-            </p>
-            
-            <p class="text-gray-500 italic text-sm">
-              Example: ₦1000 = 1000 Tokens
-            </p>
+
+          <div class="flex gap-3">
+            <button
+              type="submit"
+              [disabled]="!buyTokensForm.valid"
+              class="bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Pay with Paystack
+            </button>
+            <button
+              type="button"
+              (click)="handlePayment('q4')"
+              [disabled]="!buyTokensForm.valid"
+              class="bg-teal-700 hover:bg-teal-800 text-white font-medium py-2 px-6 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Pay with Q4 Payment
+            </button>
           </div>
-        </div>
-        
-        <!-- Transaction History Card -->
-        <div class="bg-white rounded-lg shadow-sm p-6">
-          <h2 class="text-2xl font-semibold text-teal-700 mb-6">Your Transaction History</h2>
-          
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead>
-                <tr class="border-b border-gray-200">
-                  <th class="text-left py-3 px-4 text-gray-600 font-medium">Date</th>
-                  <th class="text-left py-3 px-4 text-gray-600 font-medium">Reference</th>
-                  <th class="text-left py-3 px-4 text-gray-600 font-medium">Amount (NGN)</th>
-                  <th class="text-left py-3 px-4 text-gray-600 font-medium">Tokens</th>
-                  <th class="text-left py-3 px-4 text-gray-600 font-medium">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngIf="transactions.length === 0">
-                  <td colspan="5" class="text-center py-8 text-gray-500">
-                    No transactions found.
-                  </td>
-                </tr>
-                <tr *ngFor="let transaction of transactions" class="border-b border-gray-100 hover:bg-gray-50">
-                  <td class="py-3 px-4 text-gray-700 text-sm">{{ transaction.date }}</td>
-                  <td class="py-3 px-4 text-gray-700 text-sm font-mono">{{ transaction.reference }}</td>
-                  <td class="py-3 px-4 text-gray-700 text-sm">{{ transaction.amount }}</td>
-                  <td class="py-3 px-4 text-gray-700 text-sm">{{ transaction.tokens }}</td>
-                  <td class="py-3 px-4 text-sm">
-                    <span class="px-2 py-1 text-xs rounded-full" 
-                          [ngClass]="{
-                            'bg-yellow-100 text-yellow-800': transaction.status === 'Pending',
-                            'bg-green-100 text-green-800': transaction.status === 'Completed',
-                            'bg-red-100 text-red-800': transaction.status === 'Failed'
-                          }">
-                      {{ transaction.status }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        </form>
+      </div>
+
+      <!-- Conversion Rate Card -->
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <h2 class="text-2xl font-semibold text-teal-700 mb-4">Conversion Rate</h2>
+
+        <p class="text-gray-600 mb-3">
+          Your price is currently <span class="font-semibold text-gray-800">1 Token</span> for every
+          <span class="font-semibold text-gray-800">₦1.00</span>.
+        </p>
+
+        <p class="text-gray-500 italic text-sm">Example: ₦1000 = 1000 Tokens</p>
       </div>
     </div>
+
+    <!-- Transaction History Card -->
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <h2 class="text-2xl font-semibold text-teal-700 mb-6">Your Transaction History</h2>
+
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-3 px-4 text-gray-600 font-medium">Date</th>
+              <th class="text-left py-3 px-4 text-gray-600 font-medium">Reference</th>
+              <th class="text-left py-3 px-4 text-gray-600 font-medium">Amount (NGN)</th>
+              <th class="text-left py-3 px-4 text-gray-600 font-medium">Tokens</th>
+              <th class="text-left py-3 px-4 text-gray-600 font-medium">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (transaction of transactions; track transaction.reference) {
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-3 px-4 text-gray-700 text-sm">{{ transaction.date }}</td>
+              <td class="py-3 px-4 text-gray-700 text-sm font-mono">{{ transaction.reference }}</td>
+              <td class="py-3 px-4 text-gray-700 text-sm">{{ transaction.amount }}</td>
+              <td class="py-3 px-4 text-gray-700 text-sm">{{ transaction.tokens }}</td>
+              <td class="py-3 px-4 text-sm">
+                <span
+                  class="px-2 py-1 text-xs rounded-full"
+                  [ngClass]="{
+                    'bg-yellow-100 text-yellow-800': transaction.status === 'Pending',
+                    'bg-green-100 text-green-800': transaction.status === 'Completed',
+                    'bg-red-100 text-red-800': transaction.status === 'Failed'
+                  }"
+                >
+                  {{ transaction.status }}
+                </span>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="5" class="text-center py-8 text-gray-500">No transactions found.</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

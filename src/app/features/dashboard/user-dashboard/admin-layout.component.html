@@ -1,0 +1,11 @@
+<div class="flex min-h-screen bg-[#127D66]">
+  <app-side-nav [userType]="'admin'"></app-side-nav>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col bg-[#E6E6E6] w-full lg:w-auto">
+    <app-header [pageTitle]="'Admin Dashboard'" [userType]="'admin'"></app-header>
+    <div class="p-6 flex-1 h-full">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

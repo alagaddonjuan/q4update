@@ -72,11 +72,12 @@
 
             <!-- CTA BUTTON -->
             <div class="hidden md:flex items-center mt-4 md:mt-0">
-              <button
+              <a
+                routerLink="/auth/login"
                 class="w-full md:w-auto px-8 py-3 bg-white text-teal-800 rounded-md text-sm font-medium hover:bg-teal-50 cursor-pointer transition"
               >
                 Start building
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -101,14 +102,15 @@
       <div class="flex justify-center animate-slideinup">
         <ul class="flex flex-col sm:flex-row gap-4 md:gap-6">
           <li
-            class="bg-[#0D5A51] hover:opacity-80 transition-opacity text-white px-8 py-6 rounded-md inline-block cursor-pointer"
+            class="bg-[#0D5A51] hover:opacity-80 transition-opacity text-white rounded-md inline-block cursor-pointer"
           >
-            <a href="#">Start building for Free</a>
+            <a routerLink="/auth/login" class="block px-8 py-6">Start building for Free</a>
           </li>
           <li
-            class="bg-[#DDDDDD] hover:opacity-80 transition-opacity text-black px-8 py-6 rounded-md inline-block cursor-pointer"
+            class="bg-[#DDDDDD] hover:opacity-80 transition-opacity text-black rounded-md inline-block cursor-pointer"
           >
-            <a href="#">Run a demo</a>
+            <!-- Assuming "Run a demo" also goes to the login page -->
+            <a routerLink="/auth/login" class="block px-8 py-6">Run a demo</a>
           </li>
         </ul>
       </div>

@@ -1,17 +1,20 @@
 import { CommonModule, NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-landing-page',
-  imports: [CommonModule, NgClass],
+  standalone: true,
+  imports: [CommonModule, NgClass, RouterModule],
   templateUrl: './landing-page.component.html',
-  styleUrl: './landing-page.component.css',
+  styleUrls: ['./landing-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class LandingPageComponent {
   isMenuOpen = false;
+
+  router = inject(Router);
 
   faqs = [
     {
@@ -130,5 +133,9 @@ export class LandingPageComponent {
     });
     // Toggle the clicked one
     faq.isOpen = !faq.isOpen;
+  }
+
+  login() {
+    this.router.navigate(['/auth/login']);
   }
 }
