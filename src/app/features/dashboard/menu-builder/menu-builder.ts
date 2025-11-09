@@ -29,13 +29,13 @@ export class MenuBuilder {
     }
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   editMenu(menu: UssdMenu): void {
     // Navigate to edit page with menu ID
-    this.router.navigate(['/menus', menu.id, 'edit']);
-    
-  // Alternative routing options:
+    this.router.navigate(['/user/menus', menu.id, 'edit']);
+
+    // Alternative routing options:
     // this.router.navigate(['/menus/edit', menu.id]);
     // this.router.navigate(['/edit-menu', menu.id]);
     // this.router.navigate(['/menus', menu.id]);
