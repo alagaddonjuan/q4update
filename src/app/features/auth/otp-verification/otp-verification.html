@@ -54,13 +54,13 @@
         Didn't receive the code? 
         <button 
           (click)="resendOtp()" 
-          [disabled]="resendCountdown > 0"
+          [disabled]="resendCountdown() > 0"
           class="font-medium text-[#337267] hover:underline 
                  disabled:text-gray-400 disabled:no-underline disabled:cursor-not-allowed"
         >
           Resend OTP
         </button>
-        <span *ngIf="resendCountdown > 0" class="ml-2">({{ resendCountdown }}s)</span>
+        <span *ngIf="resendCountdown() > 0" class="ml-2">({{ resendCountdown() }}s)</span>
       </p>
 
     </div>

@@ -1,4 +1,12 @@
 <div>
+          <!-- Loading State -->
+        @if (loading()) {
+          <div class="loading-overlay">
+            <div class="spinner"></div>
+            <p>Loading USSD logs...</p>
+          </div>
+        }
+
   <!-- Hero Cards -->
   <div class="grid grid-cols-[1.7fr_1fr] lg:grid-cols-2[1.7fr_1fr] gap-3 md:gap-4 mb-3 md:mb-4">
     <!-- Left Card -->
@@ -32,7 +40,7 @@
       </div>
       <div>
         <p class="text-teal-100 text-xs md:text-sm mb-1">My balance</p>
-        <p class="text-2xl md:text-3xl font-bold">$20,400.00</p>
+        <p class="text-2xl md:text-3xl font-bold">{{formatCurrency(dashboardData()?.stats?.balance || 0)}}</p>
       </div>
       <img src="assets/user/Vector.png" class="absolute" />
     </div>

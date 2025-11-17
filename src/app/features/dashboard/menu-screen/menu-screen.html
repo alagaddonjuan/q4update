@@ -1,12 +1,46 @@
 <div class="min-h-screen bg-gray-50 p-6">
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Loading menu details...</p>
+    </div>
+  }
+
   <div class="max-w-7xl mx-auto">
-    <h1 class="text-3xl font-light text-gray-800 mb-2">Editing: {{ menuName }}</h1>
+    <!-- Error/Success Messages -->
+    @if (error()) {
+      <div class="alert alert-error mb-6">
+        <span>{{ error() }}</span>
+        <button (click)="loadMenuDetails(menuId()!)" class="btn-retry">Retry</button>
+      </div>
+    }
+
+    @if (success()) {
+      <div class="alert alert-success mb-6">
+        {{ success() }}
+      </div>
+    }
+
+    <!-- Header -->
+    <div class="flex items-center gap-4 mb-2">
+      <button 
+        (click)="goBack()"
+        class="text-teal-700 hover:text-teal-800 font-medium"
+      >
+        ← Back to Menu Builder
+      </button>
+    </div>
+
+    <h1 class="text-3xl font-light text-gray-800 mb-2">Editing: {{ menuName() }}</h1>
     <p class="text-gray-600 mb-6">Here you can edit the items in your USSD menu.</p>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Menu Items Section -->
       <div class="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
-        <h2 class="text-2xl font-semibold text-teal-700 mb-6">Menu Items</h2>
+        <h2 class="text-2xl font-semibold text-teal-700 mb-6">
+          Menu Items ({{ menuItems.length }})
+        </h2>
 
         <div class="space-y-6">
           @for (item of menuItems; track item.id; let i = $index) {
@@ -29,19 +63,24 @@
                   (click)="addChild(item)"
                   class="bg-gray-500 hover:bg-gray-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors"
                 >
-                  Add Child
+                  ➕ Add Child
                 </button>
                 <button
                   (click)="editItem(item)"
                   class="bg-cyan-500 hover:bg-cyan-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors"
                 >
-                  Edit
+                  ✏️ Edit
                 </button>
                 <button
                   (click)="deleteItem(i)"
-                  class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors"
+                  [disabled]="isItemDeleting(item.id)"
+                  class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Delete
+                  @if (isItemDeleting(item.id)) {
+                    <span class="spinner-small"></span>
+                  } @else {
+                    🗑️ Delete
+                  }
                 </button>
               </div>
             </div>
@@ -60,19 +99,24 @@
                     (click)="addChild(child)"
                     class="bg-gray-500 hover:bg-gray-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors"
                   >
-                    Add Child
+                    ➕ Add Child
                   </button>
                   <button
                     (click)="editItem(child)"
                     class="bg-cyan-500 hover:bg-cyan-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors"
                   >
-                    Edit
+                    ✏️ Edit
                   </button>
                   <button
                     (click)="deleteChild(item, j)"
-                    class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors"
+                    [disabled]="isItemDeleting(child.id)"
+                    class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors disabled:opacity-50"
                   >
-                    Delete
+                    @if (isItemDeleting(child.id)) {
+                      <span class="spinner-small"></span>
+                    } @else {
+                      🗑️ Delete
+                    }
                   </button>
                 </div>
               </div>
@@ -80,13 +124,41 @@
             </div>
             }
           </div>
+          } @empty {
+            <div class="text-center py-8 text-gray-500">
+              <div class="text-5xl mb-3">📝</div>
+              <p class="font-medium">No menu items yet</p>
+              <p class="text-sm">Add your first item using the form on the right</p>
+            </div>
           }
         </div>
       </div>
 
       <!-- Add New Item Form -->
       <div class="bg-white rounded-lg shadow-sm p-6">
-        <h2 class="text-2xl font-semibold text-teal-700 mb-6">Add New Item</h2>
+        <h2 class="text-2xl font-semibold text-teal-700 mb-6">
+          @if (editingItem()) {
+            Edit Item
+          } @else if (parentForNewChild()) {
+            Add Child Item
+          } @else {
+            Add New Item
+          }
+        </h2>
+
+        @if (parentForNewChild()) {
+          <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <p class="text-sm text-blue-800">
+              Adding child under: <strong>{{ parentForNewChild()!.trigger }}</strong>
+            </p>
+            <button 
+              (click)="cancelEdit()"
+              class="text-xs text-blue-600 hover:underline mt-1"
+            >
+              Cancel
+            </button>
+          </div>
+        }
 
         <form [formGroup]="addItemForm" (ngSubmit)="addItem()">
           <div class="mb-4">
@@ -124,6 +196,7 @@
             <textarea
               formControlName="responseText"
               rows="6"
+              placeholder="Enter the text that users will see"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               [ngClass]="{
                 'border-red-500':
@@ -137,13 +210,33 @@
             }
           </div>
 
-          <button
-            type="submit"
-            [disabled]="!addItemForm.valid"
-            class="w-full bg-teal-700 hover:bg-teal-800 text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Add Item
-          </button>
+          <div class="flex gap-2">
+            <button
+              type="submit"
+              [disabled]="isSaving() || !addItemForm.valid"
+              class="flex-1 bg-teal-700 hover:bg-teal-800 text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              @if (isSaving()) {
+                <span class="flex items-center justify-center gap-2">
+                  <span class="spinner-small"></span>
+                  Saving...
+                </span>
+              } @else if (editingItem()) {
+                Update Item
+              } @else {
+                Add Item
+              }
+            </button>
+            @if (editingItem() || parentForNewChild()) {
+              <button
+                type="button"
+                (click)="cancelEdit()"
+                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            }
+          </div>
         </form>
       </div>
     </div>

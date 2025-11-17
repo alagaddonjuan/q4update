@@ -1,4 +1,11 @@
 <div class="min-h-screen p-4">
+    <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Loading USSD menus...</p>
+    </div>
+  }
   <div class="max-w-7xl mx-auto">
     <p class="text-gray-600 mb-6">Here you can create and manage your USSD menus.</p>
 

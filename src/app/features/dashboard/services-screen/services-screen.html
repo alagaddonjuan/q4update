@@ -96,7 +96,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (log of smsLogs; track log.date) {
+              @for (log of smsLogs(); track log.date) {
               <tr class="border-b border-gray-100">
                 <td class="py-3 px-4 text-gray-700">{{ log.date }}</td>
                 <td class="py-3 px-4 text-gray-700">{{ log.status }}</td>
@@ -135,7 +135,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (log of airtimeLogs; track log.date) {
+              @for (log of airtimeLogs(); track log.date) {
               <tr class="border-b border-gray-100">
                 <td class="py-3 px-4 text-gray-700">{{ log.date }}</td>
                 <td class="py-3 px-4 text-gray-700">{{ log.phoneNumber }}</td>

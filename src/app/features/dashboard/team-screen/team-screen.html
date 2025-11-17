@@ -16,7 +16,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (member of teamMembers; track member.email) {
+              @for (member of teamMembers; track member.id) {
               <tr class="border-b border-gray-100 hover:bg-gray-50">
                 <td class="py-3 px-4 text-gray-700">{{ member.name }}</td>
                 <td class="py-3 px-4 text-gray-700">{{ member.email }}</td>
@@ -76,15 +76,33 @@
                 'border-red-500': inviteForm.get('role')?.invalid && inviteForm.get('role')?.touched
               }"
             >
-              <option value="" disabled selected>Select a role</option>
-              <option value="Admin">Admin</option>
-              <option value="Billing Manager">Billing Manager</option>
-              <option value="Member">Developer</option>
-              <option value="Viewer">Viewer</option>
+            <option value="" disabled>
+                @if (isLoadingRoles()) {
+                  Loading roles...
+                } @else {
+                  Select a role
+                }
+            </option>
+            @for (role of roles; track role.id) {
+                <option [value]="role.id">{{ role.name }}</option>
+              }
             </select>
-            @if (inviteForm.get('role')?.invalid && inviteForm.get('role')?.touched) {
+            <!-- @if (inviteForm.get('role')?.invalid && inviteForm.get('role')?.touched) {
             <p class="text-red-500 text-xs mt-1">Please select a role</p>
-            }
+            } -->
+            
+          <!-- Role Description -->
+          @if (roleControl?.value && !isLoadingRoles()) {
+            <div class="mb-6 p-3 bg-gray-50 rounded-md border-l-4 border-teal-700">
+              @for (role of roles; track role.id) {
+                @if (role.id === +roleControl?.value) {
+                  <p class="text-sm text-gray-700">
+                    <strong>{{ role.name }}:</strong> {{ role.description || 'No description available' }}
+                  </p>
+                }
+              }
+            </div>
+          }
           </div>
 
           <button

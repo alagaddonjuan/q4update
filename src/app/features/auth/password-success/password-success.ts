@@ -4,6 +4,7 @@ import { Auth } from '../services/auth';
 
 @Component({
   selector: 'app-password-success',
+  standalone: true,
   imports: [],
   templateUrl: './password-success.html',
   styleUrl: './password-success.css',

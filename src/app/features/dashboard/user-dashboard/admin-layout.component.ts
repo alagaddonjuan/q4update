@@ -7,7 +7,7 @@ import { SideNavComponent } from './../shared/side-nav/side-nav.component';
 @Component({
     selector: 'app-admin-layout',
     standalone: true,
-    imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, HeaderComponent, SideNavComponent],
+    imports: [CommonModule, RouterOutlet,  HeaderComponent, SideNavComponent],
     templateUrl: './admin-layout.component.html',
 })
 export class AdminLayoutComponent { }

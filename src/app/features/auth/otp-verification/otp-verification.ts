@@ -1,15 +1,22 @@
-import { Component,OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Required for ngModel
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { authService } from '../../../core/services/auth'; // Update path as needed
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-otp-verification',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './otp-verification.html',
   styleUrl: './otp-verification.css'
 })
-export class OtpVerification {
-   // Placeholder path for the illustration image on the left.
+export class OtpVerification implements OnInit, OnDestroy {
+  private readonly authService = inject(authService);
+  private readonly router = inject(Router);
+
+  // Placeholder path for the illustration image on the left.
   illustrationPath: string = 'assets/otp-verification.png';
 
   // Array to hold individual OTP digits
@@ -18,9 +25,17 @@ export class OtpVerification {
   // Combine digits into a single string for submission
   otpCode: string = ''; 
 
-  // Timer for resend functionality (optional, but common in OTP flows)
-  resendCountdown: number = 60; // e.g., 60 seconds
+  // Signals for reactive state management
+  readonly isLoading = signal<boolean>(false);
+  readonly errorMessage = signal<string>('');
+  readonly successMessage = signal<string>('');
+  
+  // Timer for resend functionality
+  resendCountdown = signal<number>(60);
   countdownInterval: any;
+
+  // Computed signal to check if resend is available
+  readonly canResend = computed(() => this.resendCountdown() === 0);
 
   // Placeholder for the email/phone number the OTP was sent to
   // You would typically get this from a previous route or service.
@@ -46,6 +61,11 @@ export class OtpVerification {
   handleOtpInput(event: any, index: number): void {
     const input = event.target as HTMLInputElement;
     let value = input.value;
+
+    // Clear any error messages when user starts typing
+    if (this.errorMessage()) {
+      this.errorMessage.set('');
+    }
 
     // Allow only one digit
     if (value.length > 1) {
@@ -100,50 +120,121 @@ export class OtpVerification {
     }
   }
 
-
   /**
-   * Placeholder for the verification logic.
-   * This would typically call a service to send the OTP to your backend.
+   * Verifies the OTP by calling the auth service
    */
   verifyOtp(): void {
-    if (this.otpCode.length === this.otpDigits.length) {
-      console.log('Verifying OTP:', this.otpCode);
-      alert('OTP Submitted: ' + this.otpCode + ' (Check console for verification logic)');
-      // Add your API call here, e.g., this.authService.verifyOtp(this.otpCode).subscribe(...)
-    } else {
-      alert('Please enter the complete OTP.');
+    // Validate OTP is complete
+    if (this.otpCode.length !== this.otpDigits.length) {
+      this.errorMessage.set('Please enter the complete OTP.');
+      return;
     }
+    console.log('Verifying OTP:', this.otpCode);
+    // Clear previous messages
+    this.errorMessage.set('');
+    this.successMessage.set('');
+    this.isLoading.set(true);
+
+    // Call the auth service to verify OTP
+    this.authService.verify2FA(this.otpCode)
+      .pipe(
+        finalize(() => this.isLoading.set(false))
+      )
+      .subscribe({
+        next: (response) => {
+          console.log('OTP verification successful:', response);
+          this.successMessage.set('Verification successful! Redirecting...');
+          
+          // Store auth data if returned in response
+          if (response.token && response.isAdmin !== undefined) {
+            // The service will handle storing token and admin status
+          }
+          
+          // Redirect to dashboard or appropriate page after successful verification
+          setTimeout(() => {
+            this.router.navigate(['/dashboard']);
+          }, 1500);
+        },
+        error: (error) => {
+          console.error('OTP verification failed:', error);
+          this.errorMessage.set(
+            error.error?.message || 
+            'Invalid or expired OTP. Please try again.'
+          );
+          
+          // Clear OTP fields on error
+          this.clearOtpFields();
+        }
+      });
   }
 
   /**
-   * Placeholder for the resend OTP logic.
-   * This would typically call a service to request a new OTP.
+   * Resends the OTP by calling the auth service
    */
   resendOtp(): void {
-    if (this.resendCountdown === 0) {
-      console.log('Resending OTP to:', this.recipient);
-      alert('Resending OTP to ' + this.recipient);
-      this.resendCountdown = 60; // Reset countdown
-      this.startResendCountdown();
-      // Add your API call here, e.g., this.authService.resendOtp(this.recipient).subscribe(...)
-    } else {
+    if (!this.canResend()) {
       console.log('Please wait before resending OTP.');
+      return;
     }
+
+    // Clear previous messages
+    this.errorMessage.set('');
+    this.successMessage.set('');
+    this.isLoading.set(true);
+
+    // You'll need to add a resendOTP method to your authService
+    // For now, using forgotPassword as an example
+    // Replace with actual resend endpoint
+    // this.authService.forgotPassword(this.recipient)
+    //   .pipe(
+    //     finalize(() => this.isLoading.set(false))
+    //   )
+    //   .subscribe({
+    //     next: (response) => {
+    //       console.log('OTP resent successfully:', response);
+    //       this.successMessage.set('New OTP sent successfully!');
+    //       this.resendCountdown.set(60); // Reset countdown
+    //       this.startResendCountdown();
+    //       this.clearOtpFields();
+    //     },
+    //     error: (error) => {
+    //       console.error('Failed to resend OTP:', error);
+    //       this.errorMessage.set(
+    //         error.error?.message || 
+    //         'Failed to resend OTP. Please try again later.'
+    //       );
+    //     }
+    //   });
   }
 
   /**
    * Starts the countdown timer for the resend OTP button.
    */
-  startResendCountdown(): void {
+  private startResendCountdown(): void {
     if (this.countdownInterval) {
       clearInterval(this.countdownInterval);
     }
     this.countdownInterval = setInterval(() => {
-      if (this.resendCountdown > 0) {
-        this.resendCountdown--;
+      const currentCount = this.resendCountdown();
+      if (currentCount > 0) {
+        this.resendCountdown.set(currentCount - 1);
       } else {
         clearInterval(this.countdownInterval);
       }
     }, 1000);
+  }
+
+  /**
+   * Clears all OTP input fields
+   */
+  private clearOtpFields(): void {
+    this.otpDigits = ['', '', '', '', ''];
+    this.otpCode = '';
+    
+    // Focus on first input
+    const firstInput = document.getElementById('otp-input-0');
+    if (firstInput) {
+      firstInput.focus();
+    }
   }
 }
