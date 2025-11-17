@@ -1,0 +1,97 @@
+<!-- Mobile Toggle Button -->
+<button
+  (click)="toggleSidebar()"
+  class="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 bg-teal-700 text-white rounded-lg flex items-center justify-center shadow-lg hover:bg-teal-800 transition-colors"
+  aria-label="Toggle sidebar"
+>
+  @if (!isSidebarOpen) {
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line x1="3" y1="12" x2="21" y2="12"></line>
+    <line x1="3" y1="6" x2="21" y2="6"></line>
+    <line x1="3" y1="18" x2="21" y2="18"></line>
+  </svg>
+  } @else {
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+  }
+</button>
+
+<!-- Overlay for mobile -->
+@if (isSidebarOpen) {
+<div (click)="closeSidebar()" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"></div>
+}
+
+<!-- Sidebar -->
+<aside
+  [class]="
+    'w-44 md:w-64 bg-[#127D66] text-white flex flex-col shrink-0 fixed lg:static inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out ' +
+    (isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0')
+  "
+>
+  <div class="h-20 w-full flex items-center justify-center">
+    <img [src]="logoPath" alt="Company Logo" class="h-8 md:h-10" />
+  </div>
+
+  <nav class="flex-1 px-2 py-4 space-y-2">
+    @for (link of navLinks; track link.path) {
+    <a
+      [routerLink]="link.path"
+      routerLinkActive="bg-teal-800 font-bold"
+      [routerLinkActiveOptions]="{ exact: link.isActiveMatch === 'full' }"
+      (click)="onLinkClicked(link.label)"
+      class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-teal-800 transition-colors cursor-pointer"
+    >
+      @if (link.icon) {
+      <img
+        [src]="link.icon"
+        [alt]="link.label + ' icon'"
+        class="w-5 h-5"
+        [ngClass]="{
+          'filter grayscale brightness-80': isActive(link.path),
+          'filter invert brightness-150': !isActive(link.path) && userType === 'client'
+        }"
+      />
+      } @else if (link.svg) {
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        class="w-5 h-5"
+        viewBox="0 0 512 512"
+      >
+        <path [attr.d]="link.svg"></path>
+      </svg>
+      }
+      <span
+        [ngClass]="{
+          'text-[9px] md:text-xs': userType === 'client',
+          'text-sm': userType === 'admin'
+        }"
+      >
+        {{ link.label }}
+      </span>
+    </a>
+    }
+  </nav>
+</aside>

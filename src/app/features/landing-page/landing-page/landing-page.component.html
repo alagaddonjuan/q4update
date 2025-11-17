@@ -1,0 +1,1090 @@
+<main class="w-full overflow-hidden bg-[#F2F8FF] font-sans scroll-smooth">
+  <!-- Navigation -->
+  <section
+    class="relative min-h-screen w-full overflow-x-hidden bg-radial from-[#19B896]/87 to-[#127D66DE] flex flex-col"
+  >
+    <!-- HEADER / NAV -->
+    <header class="relative z-20 p-4 md:p-0 flex-none">
+      <nav class="mt-4 md:mt-8">
+        <div class="max-w-6xl mx-auto">
+          <div
+            class="bg-[#0D5A51A6]/65 backdrop-blur-md rounded-2xl md:rounded-full px-4 py-4 md:px-8 md:py-6 flex flex-col md:flex-row items-center shadow-lg md:justify-between"
+          >
+            <div class="w-full flex items-center justify-between md:w-auto">
+              <img src="/assets/q4-logo.svg" alt="Q4 Logo" class="h-8" />
+              <div class="md:hidden">
+                <button
+                  (click)="isMenuOpen = !isMenuOpen"
+                  type="button"
+                  class="text-black hover:text-white focus:outline-none focus:text-white"
+                >
+                  <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                    @if (!isMenuOpen) {
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                    } @else if (isMenuOpen) {
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                    }
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- MOBILE MENU -->
+            <div
+              [ngClass]="{ block: isMenuOpen, hidden: !isMenuOpen }"
+              class="w-full md:flex md:items-center md:w-auto mt-4 md:mt-0"
+            >
+              <div
+                class="flex flex-col md:flex-row md:items-center md:space-x-8 text-black text-sm"
+              >
+                <a
+                  href="#services"
+                  class="py-2 md:py-0 cursor-pointer hover:opacity-80 transition scroll-smooth"
+                  >Products</a
+                >
+                <a
+                  href="#pricing"
+                  class="py-2 md:py-0 cursor-pointer hover:opacity-80 transition scroll-smooth"
+                  >Pricing</a
+                >
+                <a
+                  href="#about"
+                  class="py-2 md:py-0 cursor-pointer hover:opacity-80 transition scroll-smooth"
+                  >About us</a
+                >
+                <a
+                  href="#faq"
+                  class="py-2 md:py-0 cursor-pointer hover:opacity-80 transition scroll-smooth"
+                  >FAQ</a
+                >
+              </div>
+            </div>
+
+            <!-- CTA BUTTON -->
+            <div class="hidden md:flex items-center mt-4 md:mt-0">
+              <a
+                routerLink="/auth/login"
+                class="w-full md:w-auto px-8 py-3 bg-white text-teal-800 rounded-md text-sm font-medium hover:bg-teal-50 cursor-pointer transition"
+              >
+                Start building
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- HERO CONTENT -->
+    <div class="relative z-20 grow flex flex-col justify-center">
+      <div class="max-w-4xl mx-auto text-center px-4 py-8 md:py-12">
+        <h1
+          class="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6 md:mb-8 animate-slideinleft"
+        >
+          Power Seamless Business Communication
+        </h1>
+        <p
+          class="text-base md:text-lg text-gray-800 mb-8 md:mb-12 max-w-2xl mx-auto animate-slideinleft"
+        >
+          Build, engage, and grow with our unified API platform. Access a full suite of reliable
+          communication channels—from USSD and Bulk SMS to Voice, Chat, and Mobile Data—to create
+          connected customer experiences.
+        </p>
+
+        <div class="flex justify-center animate-slideinup pb-8 md:pb-0">
+          <ul class="flex flex-col sm:flex-row gap-4 md:gap-6 w-full sm:w-auto px-4 sm:px-0">
+            <li
+              class="bg-[#0D5A51] hover:opacity-80 transition-opacity text-white rounded-md inline-block cursor-pointer"
+            >
+              <a routerLink="/auth/login" class="block px-6 sm:px-8 py-4 sm:py-6 whitespace-nowrap"
+                >Start building for Free</a
+              >
+            </li>
+            <li
+              class="bg-[#DDDDDD] hover:opacity-80 transition-opacity text-black rounded-md inline-block cursor-pointer"
+            >
+              <a routerLink="/auth/login" class="block px-6 sm:px-8 py-4 sm:py-6 whitespace-nowrap"
+                >Run a demo</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- DECORATIVE CLOUD -->
+    <div
+      class="hidden md:block absolute bottom-12 right-20 w-72 h-72 md:w-96 md:h-96 opacity-50 animate-slideinright animate-on-scroll pointer-events-none z-10"
+    >
+      <img src="assets/cloud-card.svg" alt="Cloud" class="w-full h-full object-contain" />
+    </div>
+
+    <!-- FIXED BACKGROUND DECORATION -->
+    <div
+      class="hidden md:block absolute bottom-0 right-0 w-full pointer-events-none z-10 overflow-hidden"
+    >
+      <div
+        class="relative w-[120vw] max-w-[1800px] translate-x-[0%] translate-y-[30%] -rotate-[-8.2deg]"
+      >
+        <img
+          src="assets/element.png"
+          alt="Background Decorative Element"
+          class="w-full h-auto object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Growth Section -->
+  <section class="container mx-auto py-16 px-4">
+    <div class="max-w-6xl mx-auto flex flex-col items-center">
+      <div
+        class="w-full max-w-4xl border-2 border-[#127D66DE] rounded-2xl p-6 md:p-8 mb-12 text-center bg-radial from-[#F3FFFEE5]/90 to-[#22A9984D]/30 shadow-[7px_7px_0px_4px_#127D66DE]"
+      >
+        <h2 class="text-xl md:text-2xl font-medium text-gray-900 mb-2">
+          No matter your industry or size, we're here to help
+          <span class="text-teal-600">you grow.</span>
+        </h2>
+        <p class="text-sm md:text-[12.08px] font-normal">
+          With simplified access to robust infrastructure, developers use our powerful Token <br />
+          APIs, USSD support, and Admin Dashboard to build and scale amazing businesses.
+        </p>
+      </div>
+
+      <!-- Images Grid -->
+      <div
+        class="hidden md:block rounded-3xl p-4 md:p-8 shadow-[0px_25px_50px_-12px_#7daba1] w-full"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="rounded-2xl h-full overflow-hidden">
+            <div class="w-full h-full">
+              <img src="/assets/growth1.svg" alt="" class="w-full h-full object-cover" />
+            </div>
+          </div>
+          <div class="rounded-2xl h-full overflow-hidden">
+            <div class="w-full h-full">
+              <img src="/assets/growth2.svg" alt="" class="w-full h-full object-cover" />
+            </div>
+          </div>
+          <div class="rounded-2xl h-full overflow-hidden">
+            <div class="w-full h-full">
+              <img src="/assets/growth3.svg" alt="" class="w-full h-full object-cover" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="container mx-auto py-16 px-4 bg-gray-50 scroll-mt-20">
+    <div class="max-w-6xl mx-auto flex flex-col items-center">
+      <div
+        class="w-full max-w-4xl border-2 border-[#127D66DE] rounded-2xl p-6 md:p-8 mb-12 text-center bg-radial from-[#F3FFFEE5]/90 to-[#22A9984D]/30 shadow-[7px_7px_0px_4px_#127D66DE]"
+      >
+        <h2 class="text-xl md:text-2xl font-medium text-gray-900 mb-2">
+          What are you looking <span class="text-teal-600">for?</span>
+        </h2>
+        <p class="text-sm md:text-[12.08px] font-normal">
+          With simplified access to robust infrastructure, developers use our powerful Token <br />
+          APIs, USSD support, and Admin Dashboard to build and scale amazing businesses.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        <div
+          class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition duration-300 hover:scale-105 flex flex-col"
+        >
+          <h3 class="text-2xl font-semibold text-gray-900 mb-3">Airtime & Mobile Data</h3>
+          <p class="text-[#212121] text-sm mb-6 grow">
+            With simplified access to robust infrastructure, developers use our powerful Token APIs,
+            USSD support, and Admin Dashboard to build and scale amazing businesses.
+          </p>
+          <button
+            class="px-6 py-2 bg-teal-700 text-white rounded-lg text-sm font-medium hover:bg-teal-800 transition"
+          >
+            Enable Rewards
+          </button>
+        </div>
+        <div
+          class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition duration-300 hover:scale-105 flex flex-col"
+        >
+          <h3 class="text-2xl font-semibold text-gray-900 mb-3">USSD</h3>
+          <p class="text-[#212121] text-sm mb-6 grow">
+            Create interactive, real-time menus that work on every mobile phone—with or without the
+            internet. Ideal for mobile banking, balance checks, subscriptions, and accessing
+            services instantly.
+          </p>
+          <button
+            class="px-6 py-2 bg-teal-700 text-white rounded-lg text-sm font-medium hover:bg-teal-800 transition"
+          >
+            Build USSD Flow
+          </button>
+        </div>
+        <div
+          class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition duration-300 hover:scale-105 flex flex-col"
+        >
+          <h3 class="text-2xl font-semibold text-gray-900 mb-3">SMS</h3>
+          <p class="text-[#212121] text-sm mb-6 grow">
+            Reach customers directly and reliably with bulk SMS. Achieve near-perfect open rates for
+            time-sensitive alerts, OTPs, promotions, and transaction notifications.
+          </p>
+          <button
+            class="px-6 py-2 bg-teal-700 text-white rounded-lg text-sm font-medium hover:bg-teal-800 transition"
+          >
+            Send SMS Campaign
+          </button>
+        </div>
+        <div
+          class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition duration-300 hover:scale-105 flex flex-col"
+        >
+          <h3 class="text-2xl font-semibold text-gray-900 mb-3">Chat</h3>
+          <p class="text-[#212121] text-sm mb-6 grow">
+            Engage customers on their favorite platforms like WhatsApp and Telegram. Send rich
+            media, provide personalized support, and drive sales through conversational commerce.
+          </p>
+          <button
+            class="px-6 py-2 bg-teal-700 text-white rounded-lg text-sm font-medium hover:bg-teal-800 transition"
+          >
+            Launch Chat Service
+          </button>
+        </div>
+        <div
+          class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition duration-300 hover:scale-105 flex flex-col"
+        >
+          <h3 class="text-2xl font-semibold text-gray-900 mb-3">Voice</h3>
+          <p class="text-[#212121] text-sm mb-6 grow">
+            Make automated voice calls, run IVR systems, and enable crystal-clear communication.
+            Perfect for appointment reminders, mass notifications, and customer support lines.
+          </p>
+          <button
+            class="px-6 py-2 bg-teal-700 text-white rounded-lg text-sm font-medium hover:bg-teal-800 transition"
+          >
+            Power Your Voice
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- pricing section -->
+  <section id="pricing" class="scroll-mt-20">
+    <div class="max-w-7xl mx-auto px-4 md:py-24 mb-15">
+      <div class="text-center">
+        <h2 class="text-slate-900 text-3xl font-bold mb-4">Choose the right plan for you</h2>
+      </div>
+
+      <div class="flex mx-auto bg-[#0D5A51] rounded-full max-w-[250px] p-1 mt-10">
+        <button
+          class="text-white w-full text-[15px] font-medium bg-[#008171] py-2 px-4 rounded-full cursor-pointer"
+        >
+          Monthly
+        </button>
+        <button
+          class="text-white w-full text-[15px] font-medium py-2 px-4 rounded-full cursor-pointer"
+        >
+          Yearly
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mt-8">
+        <div class="bg-[#22A99859] rounded-3xl overflow-hidden p-8 flex flex-col items-center">
+          <div>
+            <h4 class="text-slate-900 font-semibold text-2xl text-center">Basic Plan</h4>
+
+            <p class="text-slate-600 text-sm mt-2">
+              Sessions are charged per 20 seconds (Glo sessions are per 120 seconds).
+            </p>
+          </div>
+          <div>
+            <h3 class="text-slate-900 font-semibold text-xl mt-4">₦0 - ₦199,999</h3>
+          </div>
+
+          <div class="mt-8">
+            <hr class="w-full border-t border-[#0D5A51]/30 mb-6" />
+            <h4 class="text-slate-900 font-semibold text-lg mb-4">Plan Included</h4>
+            <ul class="space-y-4">
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                MTN ₦17.00
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Airtel ₦6.00
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Glo ₦6.00
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                9mobile ₦6.00
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Airtime
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Bulk SMS
+              </li>
+            </ul>
+          </div>
+          <button
+            type="button"
+            class="w-full mt-8 px-5 py-2.5 text-[15px] font-medium bg-[#0D5A51] text-white hover:bg-blue-700 rounded-full cursor-pointer"
+          >
+            Buy Now
+          </button>
+        </div>
+
+        <div
+          class="bg-[#F7F5FF4D] lg:scale-[1.05] shadow-[0_2px_40px_-4px_rgba(93,96,127,0.2)] rounded-3xl overflow-hidden p-8 flex flex-col items-center"
+        >
+          <div>
+            <h4 class="text-slate-900 font-semibold text-xl">Plus Plan</h4>
+            <p class="text-slate-600 text-sm mt-2">
+              Sessions are charged per 20 seconds (Glo sessions are per 120 seconds).
+            </p>
+          </div>
+          <div>
+            <h3 class="text-slate-900 font-semibold text-xl mt-4">₦200,000 - ₦599,999</h3>
+          </div>
+
+          <div class="mt-8">
+            <hr class="w-full border-t border-[#0D5A51]/30 mb-6" />
+            <h4 class="text-slate-900 font-semibold text-lg mb-4">Plan Included</h4>
+            <ul class="space-y-4">
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                MTN ₦16.00
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Airtel ₦5.00
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Glo ₦5.00
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                9mobile ₦5.00
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Airtime
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Bulk SMS
+              </li>
+            </ul>
+          </div>
+          <button
+            type="button"
+            class="w-full mt-8 px-5 py-2.5 text-[15px] font-medium bg-[#0D5A51] text-white hover:bg-blue-700 rounded-full cursor-pointer"
+          >
+            Buy Now
+          </button>
+        </div>
+
+        <div class="bg-[#22A99859] rounded-3xl overflow-hidden p-8 flex flex-col items-center">
+          <div>
+            <h4 class="text-slate-900 font-semibold text-xl">Premium Plan</h4>
+            <p class="text-slate-600 text-sm mt-2">
+              Sessions are charged per 20 seconds (Glo sessions are per 120 seconds).
+            </p>
+          </div>
+          <div>
+            <h3 class="text-slate-900 font-semibold text-xl mt-4">₦600,000 - ₦1,999,999</h3>
+          </div>
+
+          <div class="mt-8">
+            <hr class="w-full border-t border-[#0D5A51]/30 mb-6" />
+            <h4 class="text-slate-900 font-semibold text-lg mb-4">Plan Included</h4>
+            <ul class="space-y-4">
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                MTN ₦15.60
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Airtel ₦4.40
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Glo ₦4.40
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                9mobile ₦4.40
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Airtime
+              </li>
+              <li class="flex items-center text-[20px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Bulk SMS
+              </li>
+            </ul>
+          </div>
+          <button
+            type="button"
+            class="w-full mt-8 px-5 py-2.5 text-[15px] font-medium bg-[#0D5A51] text-white hover:bg-blue-700 rounded-full cursor-pointer"
+          >
+            Buy Now
+          </button>
+        </div>
+
+        <div
+          class="bg-[#F7F5FF4D] lg:scale-[1.05] shadow-[0_2px_40px_-4px_rgba(93,96,127,0.2)] rounded-3xl overflow-hidden p-8 flex flex-col items-center"
+        >
+          <div>
+            <h4 class="text-slate-900 font-medium text-xl">Max Plan</h4>
+            <p class="text-slate-600 text-sm mt-2">
+              Sessions are charged per 20 seconds (Glo sessions are per 120 seconds).
+            </p>
+          </div>
+          <div>
+            <h3 class="text-slate-900 font-semibold text-xl mt-4">₦2,000,000</h3>
+          </div>
+
+          <div class="mt-8">
+            <hr class="w-full border-t border-[#0D5A51]/30 mb-6" />
+            <h4 class="text-slate-900 font-semibold text-lg mb-4">Plan Included</h4>
+            <ul class="space-y-4">
+              <li class="flex items-center text-[18px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                MTN ₦15.00
+              </li>
+              <li class="flex items-center text-[18px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Airtel ₦3.80
+              </li>
+              <li class="flex items-center text-[18px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Glo ₦3.80
+              </li>
+              <li class="flex items-center text-[18px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                9mobile ₦3.80
+              </li>
+              <li class="flex items-center text-[18px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Airtime
+              </li>
+              <li class="flex items-center text-[18px] text-slate-600 font-semibold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  class="mr-3 bg-linear-to-r from-[#178173] to-[#F1F0FFB8] rounded-full p-[3px]"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Bulk SMS
+              </li>
+            </ul>
+          </div>
+          <button
+            type="button"
+            class="w-full mt-8 px-5 py-2.5 text-[15px] font-medium bg-[#0D5A51] text-white hover:bg-blue-700 rounded-full cursor-pointer"
+          >
+            Buy Now
+          </button>
+        </div>
+      </div>
+      <div class="p-8">
+        <p class="text-[18px] font-medium">
+          **The pricing includes a one-time setup cost of NGN 450,000, a monthly maintenance fee of
+          NGN 253,750, and a compulsory NGN 200,000 deposit for session costs. all excluding VAT.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Q4 Section -->
+  <section id="about" class="scroll-mt-20">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-3xl font-bold text-center md:text-left text-gray-900 mb-12">
+        Why choose <span class="text-teal-600">Q4?</span>
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="bg-white rounded-2xl p-6 shadow-lg transition duration-300 hover:scale-105">
+          <div class="w-16 h-16 mb-4">
+            <img src="./../../../../../assets/security.svg" alt="" />
+          </div>
+          <h3 class="text-2xl font-semibold text-gray-900 mb-3">Security</h3>
+          <h5 class="mb-3 text-xl font-normal text-gray-900">
+            Enterprise-Grade Protection for Your Communications
+          </h5>
+          <p class="text-[#212121] text-sm">
+            We prioritize the integrity of your data and transactions. Our platform features
+            end-to-end encryption, secure API keys, and compliance with industry standards, ensuring
+            your customer interactions are always protected.
+          </p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-lg transition duration-300 hover:scale-105">
+          <div class="w-16 h-16 mb-4">
+            <img src="./../../../../../assets/support.svg" alt="" />
+          </div>
+          <h3 class="text-2xl font-semibold text-gray-900 mb-3">Support</h3>
+          <h5 class="mb-3 text-xl font-normal text-gray-900">
+            Your Dedicated Success Team, Always On
+          </h5>
+          <p class="text-[#212121] text-sm">
+            Get more than just a help desk. Our expert technical support team provides proactive
+            guidance and swift solutions to ensure your integration is smooth and your communication
+            channels never skip a beat.
+          </p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-lg transition duration-300 hover:scale-105">
+          <div class="w-16 h-16 mb-4">
+            <img src="./../../../../../assets/reliability.svg" alt="" />
+          </div>
+          <h3 class="text-2xl font-semibold text-gray-900 mb-3">Reliability</h3>
+          <h5 class="mb-3 text-xl font-normal text-gray-900">
+            Built for Mission-Critical Performance
+          </h5>
+          <p class="text-[#212121] text-sm">
+            Trust a platform engineered for 99.9% uptime. With redundant, scalable infrastructure,
+            we guarantee your USSD sessions, SMS alerts, and Voice calls are delivered instantly and
+            reliably, no matter the volume.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 px-4 bg-[#F9F8FE]">
+    <div class="max-w-6xl mx-auto">
+      <!-- Trust Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+        <div class="text-center md:text-left">
+          <h2 class="text-3xl md:text-[40px] font-semibold text-gray-900 mb-6">
+            Why Developers & Businesses<br />Trust Q4
+          </h2>
+          <p class="text-base md:text-[18px] font-normal text-gray-600 mb-8">
+            SaaS focus is a common delivery model for many business application, including office
+            software, messaging software, payroll processing software, DBMS software, management
+            software.
+          </p>
+
+          <div class="flex flex-col sm:flex-row md:flex-col gap-6 md:gap-0 space-y-0 md:space-y-6">
+            <div>
+              <div class="flex items-center justify-center md:justify-start space-x-1 mb-2">
+                <span *ngFor="let star of [1, 2, 3, 4, 5]" class="text-yellow-400 text-xl">★</span>
+              </div>
+              <div class="font-bold text-gray-900">4.9 / 5 rating</div>
+              <div class="text-sm text-gray-500">capterra</div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-center md:justify-start space-x-1 mb-2">
+                <span *ngFor="let star of [1, 2, 3, 4, 5]" class="text-yellow-400 text-xl">★</span>
+              </div>
+              <div class="font-bold text-gray-900">4.8 / 5 rating</div>
+              <div class="text-sm text-gray-500">Clutch.ph</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4 mx-auto px-0 md:px-8">
+          <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
+            <div
+              class="w-16 h-16 md:w-20 md:h-16 bg-white flex items-center justify-center rounded-lg shrink-0"
+            >
+              <img src="./../../../../../assets/activity.svg" alt="" />
+            </div>
+            <div>
+              <h4 class="font-semibold text-xl md:text-[28px] text-teal-600 mb-1">
+                Dedicated Developer Support
+              </h4>
+              <p class="text-gray-600 font-normal text-base md:text-[18px] mb-1">
+                From Integration to Launch, We're With You.
+              </p>
+              <p class="text-gray-600 font-normal text-base md:text-[18px]">
+                Get more than just answers—get a partner. Our technical experts provide real-time
+                SDK support, troubleshoot complex issues, and offer best-practice guidance to ensure
+                your go-live is a success.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
+            <div
+              class="w-16 h-16 md:w-20 md:h-16 bg-white flex items-center justify-center rounded-lg shrink-0"
+            >
+              <img src="./../../../../../assets/pie-chart.svg" alt="" />
+            </div>
+            <div>
+              <h4 class="font-semibold text-xl md:text-[28px] text-teal-600 mb-1">
+                Custom Integration Support
+              </h4>
+              <p class="text-gray-600 font-normal text-base md:text-[18px] mb-1">
+                Tailored to Your Stack, Accelerated for Your Timeline.
+              </p>
+              <p class="text-gray-600 font-normal text-base md:text-[18px]">
+                Don't just integrate—optimize. Our solution architects provide hands-on assistance
+                to seamlessly weave Q4I's APIs (USSD, SMS, Voice, Data, Chat) into your unique
+                infrastructure and workflows.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
+            <div
+              class="w-16 h-16 md:w-20 md:h-16 bg-white flex items-center justify-center rounded-lg shrink-0"
+            >
+              <img src="./../../../../../assets/command.svg" alt="" />
+            </div>
+            <div>
+              <h4 class="font-semibold text-xl md:text-[28px] text-teal-600 mb-1">
+                Analytics & Insights Dashboard
+              </h4>
+              <p class="text-gray-600 font-normal text-base md:text-[18px] mb-1">
+                Make Data-Driven Decisions with Crystal Clarity.
+              </p>
+              <p class="text-gray-600 font-normal text-base md:text-[18px]">
+                Monitor API performance, track message delivery rates, and analyze communication
+                costs in real-time. Our intuitive dashboard gives you the insights to optimize
+                spending and maximize engagement.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ section -->
+  <section class="container mx-auto scroll-mt-20" id="faq">
+    <div class="max-w-6xl mx-auto">
+      <div>
+        <h2 class="text-3xl md:text-4xl text-center font-bold text-[#178173] mb-6">
+          Frequently Asked Questions
+        </h2>
+      </div>
+      <div
+        class="flex flex-col items-center bg-[rgba(173,220,218,0.35)] border-2 rounded-t-3xl border-[#0D5A51CC] py-16 px-4"
+      >
+        <!-- FAQ -->
+        <div class="py-24 px-8 max-w-5xl mx-auto flex flex-col md:flex-row gap-12">
+          <div class="flex flex-col text-left basis-1/2">
+            <p class="sm:text-4xl text-3xl font-extrabold text-base-content">
+              Questions People Asked
+            </p>
+            <p class="text-base font-light mt-4 mb-4">
+              Have questions? We're here to help. Explore our frequently asked questions below for
+              quick answers and insights about our services.
+            </p>
+            <button
+              class="w-full md:w-[162.572509765625px] px-6 py-6 bg-[#0D5A51] text-white rounded-4xl text-sm font-medium hover:opacity-80 transition-opacity cursor-pointer"
+            >
+              Contact us
+            </button>
+          </div>
+          <ul class="basis-1/2">
+            @for (faq of faqs; track faq.question) {
+            <li>
+              <button
+                class="relative flex gap-2 items-center w-full py-5 text-base font-semibold text-left border-t md:text-lg border-base-content/10"
+                [attr.aria-expanded]="faq.isOpen"
+                (click)="toggleFaq(faq)"
+              >
+                <span class="flex-1 text-base-content">{{ faq.question }}</span>
+                <svg
+                  class="shrink-0 w-4 h-4 ml-auto fill-current"
+                  viewBox="0 0 16 16"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect
+                    y="7"
+                    width="16"
+                    height="2"
+                    rx="1"
+                    class="transform origin-center transition duration-200 ease-out"
+                  ></rect>
+                  <rect
+                    y="7"
+                    width="16"
+                    height="2"
+                    rx="1"
+                    class="transform origin-center transition duration-200 ease-out"
+                    [ngClass]="{ 'rotate-90': !faq.isOpen }"
+                  ></rect>
+                </svg>
+              </button>
+              <div
+                class="transition-all duration-300 ease-in-out overflow-hidden"
+                [ngClass]="{ 'max-h-0': !faq.isOpen, open: faq.isOpen }"
+              >
+                <div class="pb-5 leading-relaxed">
+                  <div class="space-y-2 leading-relaxed" [innerHTML]="faq.answer"></div>
+                </div>
+              </div>
+            </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-[#17413A] text-white py-12 px-4 mt-20">
+    <div class="max-w-6xl mx-auto">
+      <!-- Main Footer Content -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 mb-8">
+        <!-- Logo and Social Section -->
+        <div class="lg:col-span-4">
+          <img class="h-8 mb-4" src="/assets/q4-logo.svg" alt="Q4 Logo" />
+          <p class="text-[16px] text-[#F5F7FA] mb-4">© Copyright 2025 Q4 ltd.</p>
+          <p class="text-[16px] text-[#F5F7FA] mb-6">All rights reserved</p>
+          <div class="flex space-x-4">
+            <a
+              href="#"
+              class="w-10 h-10 bg-teal-700 rounded-full flex items-center justify-center hover:bg-teal-600 transition"
+            >
+              <img src="/assets/instagram.svg" alt="Instagram" class="w-5 h-5" />
+            </a>
+            <a
+              href="#"
+              class="w-10 h-10 bg-teal-700 rounded-full flex items-center justify-center hover:bg-teal-600 transition"
+            >
+              <img src="/assets/world.svg" alt="Website" class="w-5 h-5" />
+            </a>
+            <a
+              href="#"
+              class="w-10 h-10 bg-teal-700 rounded-full flex items-center justify-center hover:bg-teal-600 transition"
+            >
+              <img src="/assets/twitter.svg" alt="Twitter" class="w-5 h-5" />
+            </a>
+            <a
+              href="#"
+              class="w-10 h-10 bg-teal-700 rounded-full flex items-center justify-center hover:bg-teal-600 transition"
+            >
+              <img src="/assets/youtube.svg" alt="YouTube" class="w-5 h-5" />
+            </a>
+          </div>
+        </div>
+
+        <!-- Links and Newsletter Section -->
+        <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Company Links -->
+          <div>
+            <h4 class="font-bold text-lg mb-4">Company</h4>
+            <ul class="space-y-3">
+              <li>
+                <a href="#about" class="text-[16px] text-[#F5F7FA] hover:text-white transition"
+                  >About us</a
+                >
+              </li>
+              <li>
+                <a href="#contact" class="text-[16px] text-[#F5F7FA] hover:text-white transition"
+                  >Contact us</a
+                >
+              </li>
+              <li>
+                <a href="#pricing" class="text-[16px] text-[#F5F7FA] hover:text-white transition"
+                  >Pricing</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-[16px] text-[#F5F7FA] hover:text-white transition"
+                  >Testimonials</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- Support Links -->
+          <div>
+            <h4 class="font-bold text-lg mb-4">Support</h4>
+            <ul class="space-y-3">
+              <li>
+                <a href="#" class="text-[16px] text-[#F5F7FA] hover:text-white transition"
+                  >Help center</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-[16px] text-[#F5F7FA] hover:text-white transition"
+                  >Terms of service</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-[16px] text-[#F5F7FA] hover:text-white transition">Legal</a>
+              </li>
+              <li>
+                <a href="#" class="text-[16px] text-[#F5F7FA] hover:text-white transition"
+                  >Privacy policy</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- Newsletter -->
+          <div class="sm:col-span-2 lg:col-span-1">
+            <h4 class="font-bold text-lg mb-4">Stay up to date</h4>
+            <form class="flex flex-col sm:flex-row lg:flex-col gap-2">
+              <input
+                type="email"
+                placeholder="Your email address"
+                class="flex-1 w-full px-4 py-2 rounded-lg lg:rounded-lg bg-teal-800 text-white placeholder-teal-300 border-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+              <button
+                type="submit"
+                class="w-1/2 px-6 py-2 bg-teal-600 rounded-lg font-medium hover:bg-teal-500 transition whitespace-nowrap"
+              >
+                Send
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+</main>

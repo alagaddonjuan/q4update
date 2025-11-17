@@ -1,0 +1,23 @@
+{
+  "/auth": {
+    "target": "http://coms.q4globalltd.com",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "headers": {
+      "Connection": "keep-alive"
+    },
+    "timeout": 30000
+  },
+  "/api": {
+    "target": "http://coms.q4globalltd.com",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+
+    "headers": {
+      "Connection": "keep-alive"
+    },
+    "timeout": 30000
+  }
+}
