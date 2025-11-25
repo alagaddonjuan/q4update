@@ -66,29 +66,40 @@ export class TeamScreen implements OnInit {
     this.loadTeamMembers();
   }
 
-  loadRoles(): void {
-    this.isLoadingRoles.set(true);
+  // Inside src/app/team-screen/team-screen.component.ts
 
-    this.clientApi.getRoles().subscribe({
-      next: (roles) => {
-        console.log('👥 Roles loaded:', roles);
-        this.rolesSignal.set(roles);
-        this.isLoadingRoles.set(false);
-      },
-      error: (err) => {
-        console.error('❌ Error loading roles:', err);
-        this.isLoadingRoles.set(false);
-        
-        // Set default roles as fallback
-        this.rolesSignal.set([
-          { id: 1, name: 'Admin', description: 'Full access to all features' },
-          { id: 2, name: 'Developer', description: 'Access to API and development tools' },
-          { id: 3, name: 'Manager', description: 'Manage team and services' },
-          { id: 4, name: 'Viewer', description: 'Read-only access' }
-        ]);
-      }
-    });
-  }
+loadRoles(): void {
+  this.isLoadingRoles.set(true);
+
+  this.clientApi.getRoles().subscribe({
+    next: (roles: any[]) => { // Ensure 'roles' is typed as an array (or 'any[]')
+      console.log('👥 Roles loaded (Raw):', roles); // Log the original data
+      
+      // 🎯 SOLUTION: Map the API's 'role_name' to the required 'name' key
+      const transformedRoles = roles.map(role => ({
+        id: role.id,
+        name: role.role_name, // Map role_name -> name
+        description: role.description || '' // Ensure description is available if needed
+      }));
+      
+      console.log('✅ Roles loaded (Transformed):', transformedRoles);
+      this.rolesSignal.set(transformedRoles);
+      this.isLoadingRoles.set(false);
+    },
+    error: (err) => {
+      console.error('❌ Error loading roles:', err);
+      this.isLoadingRoles.set(false);
+      
+      // Fallback roles are correctly defined using 'name' key, so they are safe:
+      this.rolesSignal.set([
+        { id: 1, name: 'Admin', description: 'Full access to all features' },
+        { id: 2, name: 'Developer', description: 'Access to API and development tools' },
+        { id: 3, name: 'Manager', description: 'Manage team and services' },
+        { id: 4, name: 'Viewer', description: 'Read-only access' }
+      ]);
+    }
+  });
+}
 
   loadTeamMembers(): void {
     this.isLoading.set(true);

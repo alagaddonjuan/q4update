@@ -1,14 +1,20 @@
-<header class="bg-[#E6E6E6] h-16 flex items-center justify-between px-6">
-  <h1 class="text-2xl font-semibold text-gray-800">{{ pageTitle }}</h1>
+<header class="bg-[#E6E6E6] h-16 flex items-center justify-between  px-6">
+  <h1 class="text-2xl font-semibold text-gray-800 ml-12 md:ml-10">{{ pageTitle }}</h1>
   <div class="flex items-center gap-2 md:gap-3">
-    <span class="text-xs md:text-sm text-gray-600 hidden sm:inline">{{ dashboardData()?.client?.name }}</span>
+    <span class="text-xs md:text-sm text-gray-600 hidden sm:inline"></span>
     <details #details class="relative inline-block">
       <summary class="list-none cursor-pointer focus:outline-none">
-        <img
+        <!-- <img
           class="w-8 h-8 md:w-10 md:h-10 aspect-square rounded-lg flex items-center justify-center"
-          src="/assets/profile-pic.png"
+          src="/assets/profile-pic.png"w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold
           alt="User Profile"
-        />
+        /> -->
+        <div 
+        class="w-8 h-8 md:w-10 md:h-10 aspect-square rounded-lg flex items-center justify-center"
+        [ngClass]="getAvatarColor()"
+        >
+        {{ getInitials() }}
+      </div>
       </summary>
       <ul
         id="dropdownMenu"

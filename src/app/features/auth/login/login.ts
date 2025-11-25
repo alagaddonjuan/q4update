@@ -62,7 +62,7 @@ export class Login implements OnInit {
       this.authService.login(loginData).subscribe({
         next: (response) => {
           this.isLoading.set(false);
-          console.log('Login successful:', response);
+          // console.log('Login successful:', response);
           
           // Navigate based on user role
           if (response.isAdmin) {
