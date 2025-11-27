@@ -35,25 +35,30 @@ export const routes: Routes = [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
             {
                 path: 'dashboard',
-                loadComponent: () => import('./features/dashboard/dashboard-screen/dashboard-screen').then(m => m.DashboardScreen)
-                // You can create a dedicated admin dashboard screen later
+                loadComponent: () => import('./features/dashboard/admin/admin-dashboard/admin-dashboard/admin-dashboard').then(m => m.AdminDashboard),
             },
             {
-                path: 'users',
-                // Example of a future admin-only screen
-                loadComponent: () => import('./features/dashboard/team-screen/team-screen').then(m => m.TeamScreen)
+                path: 'registered-clients',
+                loadComponent: () => import('./features/dashboard/admin/registered-clients/registered-clients').then(m => m.RegisteredClients)
             },
             {
-                path: 'settings',
-                // Example of a future admin-only screen
-                loadComponent: () => import('./features/dashboard/profile-screen/profile-screen').then(m => m.ProfileScreen)
+                path: 'sms-logs',
+                loadComponent: () => import('./features/dashboard/admin/sms-logs/sms-logs').then(m => m.SmsLogs)
+            },
+            {
+                path: 'airtime-logs',
+                loadComponent: () => import('./features/dashboard/admin/airtime-logs/airtime-logs').then(m => m.AirtimeLogs)
+            },
+            {
+                path: 'transaction-logs',
+                loadComponent: () => import('./features/dashboard/admin/transaction-logs/transaction-logs').then(m => m.TransactionLogs)
+            },
+            {
+                path: 'ussd-logs',
+                loadComponent: () => import('./features/dashboard/admin/ussd-logs/ussd-logs').then(m => m.UssdLogs)
             },
         ]
     },
-    // The route for editing menus is now a child of the 'user' path, which is more logical.
-    // I have moved it inside the 'user' children array.
-    // {path: 'menus/:id/edit', loadComponent: () => import('./features/dashboard/menu-screen/menu-screen').then(m => m.MenuScreen)},
-
     {
         path: '**',
         redirectTo: ''
