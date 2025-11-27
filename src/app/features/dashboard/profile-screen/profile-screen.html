@@ -22,18 +22,15 @@
             class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-gray-200"
           >
             <div class="flex items-center gap-4">
-              <div
-                class="w-16 h-16 sm:w-20 sm:h-20 bg-gray-300 rounded-full overflow-hidden shrink-0"
-              >
-                <img
-                  src="/assets/profile-pic.png"
-                  alt="Profile"
-                  class="w-full h-full object-cover"
-                />
+              <div 
+                  class="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold"
+                  [ngClass]="getAvatarColor()"
+                >
+                  {{ getInitials() }}
               </div>
               <div>
-                <h2 class="text-lg sm:text-xl font-semibold text-gray-800">Marvin McKinney</h2>
-                <p class="text-sm text-gray-500">marvin&#64;deepcreep.com</p>
+                <h2 class="text-lg sm:text-xl font-semibold text-gray-800"> {{ profileForm.get('fullName')?.value || 'N/A' }}</h2>
+                <p class="text-sm text-gray-500">{{ profileForm.get('email')?.value || 'N/A' }}</p>
               </div>
             </div>
             <button

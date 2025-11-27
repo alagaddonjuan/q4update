@@ -11,7 +11,6 @@ export class AdminApi {
 
   private readonly http = inject(HttpClient);
   // All admin endpoints will go through the /api proxy
-  // private readonly baseUrl = 'https://coms.q4globalltd.com/api/admin';
 
   // If apiUrl is empty, add /api prefix
   private readonly baseUrl = environment.apiUrl === 'api/admin'

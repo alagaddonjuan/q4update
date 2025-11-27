@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { adminGuard, authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     {
@@ -12,6 +13,7 @@ export const routes: Routes = [
     {
         path: 'user',
         loadComponent: () => import('./features/dashboard/user-dashboard/client-layout.component').then(m => m.ClientLayoutComponent),
+         canActivate: [authGuard],
         children: [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
             { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard-screen/dashboard-screen').then(m => m.DashboardScreen) },
@@ -28,6 +30,7 @@ export const routes: Routes = [
     {
         path: 'admin',
         loadComponent: () => import('./features/dashboard/user-dashboard/admin-layout.component').then(m => m.AdminLayoutComponent),
+        canActivate: [authGuard, adminGuard],
         children: [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
             {
