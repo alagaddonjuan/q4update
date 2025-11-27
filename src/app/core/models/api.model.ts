@@ -58,3 +58,87 @@ export interface ManualTopupRequest {
   clientId: number;
   amount: number;
 }
+
+export interface ManualTransaction {
+  clientId: number;
+  type: string;
+  amount: number;
+  reason: string;
+}
+export interface SendAnnouncementRequest {
+  subject: string;
+  message: string;
+}
+
+export interface AdminStats {
+  clientCount: number;
+  tokensPurchased: string;
+  smsSentCount: number;
+}
+
+export interface PricingTiersResponse {
+  id: number;
+  tier_name: string;
+  sms_price: number;
+  ussd_multiplier: number;
+}
+
+export interface PricingTierPrices {
+  sms_price: string;
+  ussd_multiplier: string;
+}
+
+export interface ClientsResponse {
+  id: number;
+  name: string;
+  email: string;
+  status: string;
+  is_admin: number;
+  created_at: Date;
+  token_balance: number;
+  sender_id: null | string;
+  ussd_code: null | string;
+  pricing_tier_id: number | null;
+  pricing_tier_name: null | string;
+}
+
+export interface UpdateClientDetails {
+  name: string;
+  ussd_code?: string;
+  sender_id?: string;
+}
+
+export interface LogsResponse {
+  smsLogs: any[];
+  airtimeLogs: any[];
+  ussdLogs: UssdLog[];
+  transactions: Transaction[];
+}
+
+export interface Transaction {
+  id: number;
+  client_id: number;
+  reference: string;
+  amount: string;
+  tokens_purchased: number;
+  status: string;
+  gateway: string;
+  notes: null | string;
+  created_at: Date;
+  client_name: string;
+}
+
+export interface UssdLog {
+  id: number;
+  client_id: number;
+  session_id: string;
+  phone_number: string;
+  network_code: string;
+  final_user_string: null | string;
+  duration_seconds: number | null;
+  session_cost: string | null;
+  client_price: null | string;
+  status: string;
+  logged_at: Date;
+  client_name: string;
+}
