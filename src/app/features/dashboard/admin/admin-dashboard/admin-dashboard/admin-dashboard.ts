@@ -29,9 +29,9 @@ export class AdminDashboard {
   })
 
   transactionForm = this.fb.nonNullable.group({
-    clientId: [0, Validators.compose([Validators.required])],
+    clientId: ["", Validators.compose([Validators.required])],
     transactionType: ["", Validators.compose([Validators.required])],
-    amount: [0, Validators.compose([Validators.required, Validators.min(1)])],
+    amount: ["", Validators.compose([Validators.required, Validators.min(1)])],
     reason: [""],
   })
 
@@ -63,14 +63,11 @@ export class AdminDashboard {
   getStats() {
     this.adminApi.getStats().subscribe({
       next: (stats) => {
-        console.log('Admin Stats:', stats);
-
         this.adminStats.set(stats);
-
-
       },
       error: (err) => {
         console.error('Error fetching stats:', err);
+        this.alertService.error(`Failed to fetch admin stats: ${err.message || err}`);
       }
     })
   }
@@ -78,15 +75,12 @@ export class AdminDashboard {
   addCredit() {
     if (this.topUpForm.valid) {
       const { clientId, amount } = this.topUpForm.value;
-      console.log('Adding credit:', { clientId, amount });
-      return;
 
       this.adminApi.manualTopup({
         clientId: Number(clientId),
         amount: Number(amount)
       }).subscribe({
         next: (response) => {
-          console.log('Credit added successfully:', response);
           this.alertService.success(`Successfully added ${amount} tokens to client ${clientId}`);
           this.topUpForm.reset();
         },
@@ -104,7 +98,6 @@ export class AdminDashboard {
   getPricingTiers() {
     this.adminApi.getPricingTiers().subscribe({
       next: (tiers) => {
-        console.log(tiers, 'pricing tiers');
         this.pricingTiers.set(tiers || [])
       },
       error: (err) => {
@@ -150,11 +143,8 @@ export class AdminDashboard {
       ussd_multiplier: String(this.editPricesForm.value.ussd_multiplier || ''),
     };
 
-    console.log('Updating prices for tier:', updateTier);
-
     this.adminApi.updateTierPrices(tier.id, updateTier).subscribe({
       next: (response) => {
-        console.log('Prices updated successfully:', response);
         this.alertService.success(`Prices for ${tier.tier_name} updated successfully`);
         this.closeEditPricesModal();
         this.getPricingTiers(); // Refresh the tiers list
@@ -173,11 +163,9 @@ export class AdminDashboard {
     }
     // const tierName = this.tier_Name.value.trim();
     const tier = { tier_name: (this.createTierForm.value.tier_name || '').trim() };
-    console.log(tier);
 
     this.adminApi.createPricingTier(tier).subscribe({
       next: (response) => {
-        console.log('Pricing tier created successfully:', response);
         this.alertService.success(`Pricing tier "${this.createTierForm.value}" created successfully`);
         this.createTierForm.reset();
         this.getPricingTiers();
@@ -202,11 +190,8 @@ export class AdminDashboard {
       reason: this.transactionForm.value.reason || ''
     };
 
-    console.log('Processing transaction:', manualTransaction);
-    return;
     this.adminApi.manualTransaction(manualTransaction).subscribe({
       next: (response) => {
-        console.log('Transaction processed successfully:', response);
         this.alertService.success('Transaction processed successfully');
         this.transactionForm.reset();
       },
@@ -228,11 +213,8 @@ export class AdminDashboard {
       message: this.announcementForm.value.message || '',
     };
 
-    console.log('Sending announcement:', announcement);
-    return;
     this.adminApi.sendAnnouncement(announcement).subscribe({
       next: (response) => {
-        console.log('Announcement sent successfully:', response);
         this.alertService.success('Announcement sent successfully');
         this.announcementForm.reset();
       },

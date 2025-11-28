@@ -10,64 +10,60 @@ import { environment } from '../../../environments/environment';
 export class AdminApi {
 
   private readonly http = inject(HttpClient);
-  // All admin endpoints will go through the /api proxy
 
-  // If apiUrl is empty, add /api prefix
-  private readonly baseUrl = environment.apiUrl === 'api/admin'
-    ? environment.apiUrl
-    : (environment.apiUrl || '') + '/api/admin';
+  private readonly baseUrl = environment.apiUrl;
 
   getStats(): Observable<AdminStats> {
-    return this.http.get<AdminStats>(`${this.baseUrl}/stats`);
+    return this.http.get<AdminStats>(`${this.baseUrl}/api/admin/stats`);
   }
 
   getClients(): Observable<ClientsResponse[]> {
-    return this.http.get<ClientsResponse[]>(`${this.baseUrl}/clients`);
+    return this.http.get<ClientsResponse[]>(`${this.baseUrl}/api/admin/clients`);
   }
 
   getLogs(): Observable<LogsResponse> {
-    return this.http.get<LogsResponse>(`${this.baseUrl}/logs`);
+    return this.http.get<LogsResponse>(`${this.baseUrl}/api/admin/logs`);
   }
 
   manualTopup(data: ManualTopupRequest): Observable<any> {
-    return this.http.post(`${this.baseUrl}/topup`, data);
+    return this.http.post(`${this.baseUrl}/api/admin/topup`, data);
   }
 
   manualTransaction(data: ManualTransaction) {
-    return this.http.post(`${this.baseUrl}/transactions/manual`, data);
+    return this.http.post(`${this.baseUrl}/api/admin/transactions/manual`, data);
   }
 
   updateClientStatus(clientId: number, status: 'active' | 'suspended') {
-    return this.http.put(`${this.baseUrl}/clients/${clientId}/status`, { status });
+    return this.http.put(`${this.baseUrl}/api/admin/clients/${clientId}/status`, { status });
   }
 
   updateClientDetails(clientId: number, data: UpdateClientDetails) {
-    return this.http.put(`${this.baseUrl}/clients/${clientId}`, data);
+    return this.http.put(`${this.baseUrl}/api/admin/clients/${clientId}`, data);
   }
 
   assignTierToClient(clientId: number, tierId: number): Observable<any> {
-    return this.http.put(`${this.baseUrl}/clients/${clientId}/assign-tier`, { tierId });
+    return this.http.put(`${this.baseUrl}/api/admin/clients/${clientId}/assign-tier`, { tierId });
   }
 
   getPricingTiers(): Observable<PricingTiersResponse[]> {
-    return this.http.get<PricingTiersResponse[]>(`${this.baseUrl}/pricing-tiers`);
+    return this.http.get<PricingTiersResponse[]>(`${this.baseUrl}/api/admin/pricing-tiers`);
   }
 
   createPricingTier(data: { tier_name: string }) {
-    return this.http.post(`${this.baseUrl}/pricing-tiers`, data);
+    return this.http.post(`${this.baseUrl}/api/admin/pricing-tiers`, data);
   }
 
   getTierPrices(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/pricing-tiers/${id}/prices`);
+    return this.http.get(`${this.baseUrl}/api/admin/pricing-tiers/${id}/prices`);
   }
 
   updateTierPrices(id: number, data: PricingTierPrices) {
-    return this.http.put(`${this.baseUrl}/pricing-tiers/${id}/prices`, data);
+    return this.http.put(`${this.baseUrl}/api/admin/pricing-tiers/${id}/prices`, data);
   }
 
 
   sendAnnouncement(data: SendAnnouncementRequest) {
-    return this.http.post(`${this.baseUrl}/announcements`, data);
+    return this.http.post(`${this.baseUrl}/api/admin/announcements`, data);
   }
 
 }
