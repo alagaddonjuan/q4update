@@ -13,7 +13,7 @@ export const routes: Routes = [
     {
         path: 'user',
         loadComponent: () => import('./features/dashboard/user-dashboard/client-layout.component').then(m => m.ClientLayoutComponent),
-         canActivate: [authGuard],
+        canActivate: [authGuard],
         children: [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
             { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard-screen/dashboard-screen').then(m => m.DashboardScreen) },
@@ -57,6 +57,8 @@ export const routes: Routes = [
                 path: 'ussd-logs',
                 loadComponent: () => import('./features/dashboard/admin/ussd-logs/ussd-logs').then(m => m.UssdLogs)
             },
+            { path: 'profile', loadComponent: () => import('./features/dashboard/profile-screen/profile-screen').then(m => m.ProfileScreen) },
+
         ]
     },
     {

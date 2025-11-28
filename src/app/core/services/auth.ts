@@ -11,32 +11,23 @@ import { LoginRequest, LoginResponse, RegisterRequest } from '../models/api.mode
   providedIn: 'root',
 })
 export class authService {
-private readonly http = inject(HttpClient);
-private readonly router = inject(Router);
-private readonly baseUrl:string;
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
+  private readonly baseUrl: string;
 
-constructor() {
-    // Debug: Log the environment configuration
-    console.log('Environment config:', environment);
-    console.log('API URL:', environment.apiUrl);
-    
-    // Build the auth base URL
-    // If apiUrl is set, append /auth to it
-    // If using proxy with empty apiUrl, use /auth directly
-    this.baseUrl = environment.apiUrl 
-      ? `${environment.apiUrl}/auth` 
+  constructor() {
+    this.baseUrl = environment.apiUrl
+      ? `${environment.apiUrl}/auth`
       : '/auth';
-    
-    console.log('Auth Base URL:', this.baseUrl);
-}
+  }
 
-// Signals for reactive state
+  // Signals for reactive state
   private readonly isAdminSignal = signal<boolean>(this.checkAdminStatus());
   readonly isAdmin = this.isAdminSignal.asReadonly();
-  
+
   private readonly tokenSignal = signal<string | null>(localStorage.getItem('token'));
   readonly token = this.tokenSignal.asReadonly();
-  
+
   readonly isAuthenticated = computed(() => !!this.tokenSignal());
 
   register(data: RegisterRequest): Observable<any> {
@@ -78,6 +69,7 @@ constructor() {
   private clearAuthData(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('isAdmin');
+    localStorage.removeItem('pageTitle');
     this.tokenSignal.set(null);
     this.isAdminSignal.set(false);
   }

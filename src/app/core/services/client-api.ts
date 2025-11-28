@@ -1,23 +1,18 @@
-import { Injectable,inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { DashboardData, SendSmsRequest,SendAirtimeRequest,TeamInviteRequest,MenuItemRequest ,PaymentInitRequest,ApiKeyRequest } from '../models/api.model';
+import { DashboardData, SendSmsRequest, SendAirtimeRequest, TeamInviteRequest, MenuItemRequest, PaymentInitRequest, ApiKeyRequest } from '../models/api.model';
 
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClientApiService {
+  private readonly baseUrl = environment.apiUrl;
   private readonly http = inject(HttpClient);
 
-  // If apiUrl is empty, add /api prefix
-  private readonly baseUrl = environment.apiUrl === 'api' 
-    ? environment.apiUrl 
-    : (environment.apiUrl || '') + '/api';
-  
-
-   // Dashboard & Core
+  // Dashboard & Core
   getDashboard(): Observable<DashboardData> {
     return this.http.get<DashboardData>(`${this.baseUrl}/api/dashboard`);
   }

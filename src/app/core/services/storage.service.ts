@@ -11,22 +11,6 @@ const STORAGE_KEYS = {
 })
 export class StorageService {
 
-  // storeLoggedInUser(data: MsalUserProfile) {
-  // 	localStorage.setItem(STORAGE_KEYS.LOGGEDIN_USER_KEY, JSON.stringify(data));
-  // }
-
-  // getLoggedInUser(): string | null {
-  // 	const loggedUserData = localStorage.getItem(STORAGE_KEYS.LOGGEDIN_USER_KEY);
-  // 	if (loggedUserData === null || loggedUserData === undefined) {
-  // 		return null;
-  // 	}
-  // 	return JSON.parse(loggedUserData) as MsalUserProfile;
-  // }
-
-  // isUserLoggedIn(): boolean {
-  // 	return !!this.getLoggedInUser();
-  // }
-
   getLoggedInUser(): string | null {
     return localStorage.getItem(STORAGE_KEYS.LOGGEDIN_USER_KEY);
   }
