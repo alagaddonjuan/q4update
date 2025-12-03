@@ -4,6 +4,7 @@ import { Chart, registerables } from 'chart.js';
 import { Router } from '@angular/router';
 import { ClientApiService } from '../../../core/services/client-api';
 import { DashboardData } from '../../../core/models/api.model';
+import { AlertService } from '../../../core/services/alert.service';
 
 Chart.register(...registerables);
 
@@ -33,16 +34,16 @@ interface Activity {
 export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly clientApi = inject(ClientApiService);
-  
+  alertService = inject(AlertService);
+
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
-  
+
   chart: Chart | null = null;
-  
+
   // Signals for reactive state management
   readonly loading = signal<boolean>(true);
-  readonly error = signal<string | null>(null);
   readonly dashboardData = signal<DashboardData | null>(null);
-  
+
   stats: StatCard[] = [
     { icon: '/assets/user/exchange.png', title: 'Utility Bill', value: '0 Token', key: 'utility_bills' },
     { icon: '/assets/user/message-icon.png', title: 'Total SMS sent', value: '0 SMS', key: 'sms_count' },
@@ -62,7 +63,6 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
 
   loadDashboardData(): void {
     this.loading.set(true);
-    this.error.set(null);
 
     this.clientApi.getDashboard().subscribe({
       next: (data) => {
@@ -71,7 +71,7 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
         this.updateStats(data);
         this.updateActivities(data);
         this.loading.set(false);
-        
+
         // Create chart after data is loaded
         setTimeout(() => {
           this.loadChartData();
@@ -79,7 +79,7 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
       },
       error: (err) => {
         console.error('❌ Error loading dashboard:', err);
-        this.error.set('Failed to load dashboard data. Please try again.');
+        this.alertService.error('Failed to load dashboard data. Please try again.');
         this.loading.set(false);
       }
     });
@@ -88,29 +88,29 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
   updateStats(data: DashboardData): void {
     // Update stats based on API data
     const stats = data.stats || {};
-    
+
     this.stats = [
-      { 
-        icon: '/assets/user/exchange.png', 
-        title: 'Account Balance', 
+      {
+        icon: '/assets/user/exchange.png',
+        title: 'Account Balance',
         value: `₦${this.formatNumber(stats.balance || 0)}`,
         key: 'balance'
       },
-      { 
-        icon: '/assets/user/message-icon.png', 
-        title: 'Total SMS sent', 
+      {
+        icon: '/assets/user/message-icon.png',
+        title: 'Total SMS sent',
         value: `${this.formatNumber(data.sms_logs?.length || 0)} SMS`,
         key: 'sms_count'
       },
-      { 
-        icon: '/assets/user/tel-icon.png', 
-        title: 'Total Airtime send', 
+      {
+        icon: '/assets/user/tel-icon.png',
+        title: 'Total Airtime send',
         value: `₦${this.formatNumber(this.calculateAirtimeTotal(data.airtime_logs))}`,
         key: 'airtime_total'
       },
-      { 
-        icon: '/assets/user/ussd-icon.png', 
-        title: 'USSD Sessions', 
+      {
+        icon: '/assets/user/ussd-icon.png',
+        title: 'USSD Sessions',
         value: `${this.formatNumber(data.ussd_logs?.length || 0)} Sessions`,
         key: 'ussd_count'
       }
@@ -198,9 +198,9 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
     if (!this.chartCanvas) {
       return;
     }
-    
+
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
-    
+
     if (ctx) {
       // Use API data or fallback to default
       const chartLabels = data?.labels || ['TOKEN', 'SMS', 'AIRTIME', 'USSD'];
@@ -255,10 +255,6 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  
-
-  
-
   // Helper methods
   getInitials(name: string): string {
     if (!name) return 'U';
@@ -284,7 +280,7 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
 
   formatTime(timestamp: string): string {
     if (!timestamp) return 'N/A';
-    
+
     const date = new Date(timestamp);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -296,9 +292,9 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
     if (diffMins < 60) return `${diffMins}m ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
-    
-    return date.toLocaleDateString('en-NG', { 
-      month: 'short', 
+
+    return date.toLocaleDateString('en-NG', {
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -311,10 +307,6 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
       const amount = parseFloat(log.amount || 0);
       return total + amount;
     }, 0);
-  }
-
-  refreshDashboard(): void {
-    this.loadDashboardData();
   }
 
   navigateToProfilePage(): void {

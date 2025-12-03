@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { authService } from '../../../core/services/auth';
+import { AuthService } from '../../../core/services/auth';
 import { RegisterRequest } from '../../../core/models/api.model';
 
 @Component({
@@ -14,17 +14,17 @@ import { RegisterRequest } from '../../../core/models/api.model';
 })
 export class Signup implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly authService = inject(authService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   signupForm!: FormGroup;
-  
+
   // Signals for reactive state management
   readonly showPassword = signal(false);
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
-  
+
   // Path for the illustration image on the left.
   readonly illustrationPath: string = 'assets/form-image.png';
 
@@ -68,10 +68,10 @@ export class Signup implements OnInit {
           console.log('✅ Registration successful:', response);
           this.isLoading.set(false);
           this.successMessage.set('Account created successfully! Redirecting to login...');
-          
+
           // Clear form
           this.signupForm.reset();
-          
+
           // Redirect to login after 2 seconds
           setTimeout(() => {
             this.router.navigate(['/auth/login'], {
@@ -82,7 +82,7 @@ export class Signup implements OnInit {
         error: (error) => {
           console.error('❌ Registration error:', error);
           this.isLoading.set(false);
-          
+
           // Handle different error scenarios
           if (error.status === 400) {
             this.errorMessage.set(error.error?.message || 'Invalid registration data. Please check your information.');
@@ -107,7 +107,7 @@ export class Signup implements OnInit {
     console.log('🔐 Google sign-in clicked');
     // TODO: Implement Google OAuth sign-in logic
     this.errorMessage.set('Google sign-in not yet implemented. Coming soon!');
-    
+
     setTimeout(() => this.errorMessage.set(null), 3000);
   }
 

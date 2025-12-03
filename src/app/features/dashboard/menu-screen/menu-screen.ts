@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClientApiService } from '../../../core/services/client-api';
 import { MenuItemRequest } from '../../../core/models/api.model';
+import { AlertService } from '../../../core/services/alert.service';
 
 interface MenuItem {
   id?: number;
@@ -26,9 +27,10 @@ export class MenuScreen implements OnInit {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
   private readonly clientApi = inject(ClientApiService);
+  alertService = inject(AlertService);
 
   addItemForm: FormGroup;
-  
+
   // Signals for reactive state management
   private readonly menuItemsSignal = signal<MenuItem[]>([]);
   readonly menuName = signal<string>('Loading...');
@@ -36,8 +38,6 @@ export class MenuScreen implements OnInit {
   readonly isLoading = signal<boolean>(true);
   readonly isSaving = signal<boolean>(false);
   readonly isDeleting = signal<{ [key: number]: boolean }>({});
-  readonly error = signal<string | null>(null);
-  readonly success = signal<string | null>(null);
   readonly editingItem = signal<MenuItem | null>(null);
   readonly parentForNewChild = signal<MenuItem | null>(null);
 
@@ -59,36 +59,35 @@ export class MenuScreen implements OnInit {
       this.menuId.set(+id);
       this.loadMenuDetails(+id);
     } else {
-      this.error.set('Invalid menu ID');
+      this.alertService.error('Invalid menu ID');
       this.isLoading.set(false);
     }
   }
 
   loadMenuDetails(menuId: number): void {
     this.isLoading.set(true);
-    this.error.set(null);
 
     this.clientApi.getMenuDetails(menuId).subscribe({
       next: (response) => {
         console.log('📋 Menu details loaded:', response);
-        
+
         // Set menu name
         this.menuName.set(response.menu?.name || response.name || `Menu ${menuId}`);
-        
+
         // Transform and organize items in hierarchical structure
         const items = response.items || response.menu_items || [];
         const organizedItems = this.organizeMenuItems(items);
-        
+
         this.menuItemsSignal.set(organizedItems);
         this.isLoading.set(false);
       },
       error: (err) => {
         console.error('❌ Error loading menu details:', err);
-        
+
         if (err.status === 404) {
           console.log('⚠️ Menu not found. Using fallback data.');
-          this.error.set('Menu not found. Showing sample structure.');
-          
+          this.alertService.error('Menu not found. Showing sample structure.');
+
           // Fallback data for development
           this.menuName.set('Sample Menu');
           this.menuItemsSignal.set([
@@ -116,11 +115,11 @@ export class MenuScreen implements OnInit {
             }
           ]);
         } else if (err.status === 0) {
-          this.error.set('Cannot connect to server. Please check if the API is running.');
+          this.alertService.error('Cannot connect to server. Please check if the API is running.');
         } else {
-          this.error.set('Failed to load menu details. Please try again.');
+          this.alertService.error('Failed to load menu details. Please try again.');
         }
-        
+
         this.isLoading.set(false);
       }
     });
@@ -163,13 +162,11 @@ export class MenuScreen implements OnInit {
     if (this.addItemForm.valid) {
       const menuId = this.menuId();
       if (!menuId) {
-        this.error.set('Invalid menu ID');
+        this.alertService.error('Invalid menu ID');
         return;
       }
 
       this.isSaving.set(true);
-      this.error.set(null);
-      this.success.set(null);
 
       const formValue = this.addItemForm.value;
       const parentForChild = this.parentForNewChild();
@@ -187,32 +184,32 @@ export class MenuScreen implements OnInit {
         next: (response) => {
           console.log('✅ Menu item added successfully:', response);
           this.isSaving.set(false);
-          this.success.set('Menu item added successfully!');
-          
+          this.alertService.success('Menu item added successfully!');
+
           // Reload menu to get updated structure
           this.loadMenuDetails(menuId);
-          
+
           // Reset form and parent reference
           this.addItemForm.reset({ responseType: 'CON' });
           this.parentForNewChild.set(null);
-          
+
           // Clear success message after 3 seconds
-          setTimeout(() => this.success.set(null), 3000);
+          setTimeout(() => 3000);
         },
         error: (err) => {
           console.error('❌ Error adding menu item:', err);
           this.isSaving.set(false);
-          
+
           if (err.status === 404) {
             console.log('⚠️ API not available. Adding locally.');
             this.handleLocalAdd(formValue, parentForChild);
           } else if (err.status === 400) {
-            this.error.set(err.error?.message || 'Invalid menu item data.');
+            this.alertService.error(err.error?.message || 'Invalid menu item data.');
           } else {
-            this.error.set('Failed to add menu item. Please try again.');
+            this.alertService.error('Failed to add menu item. Please try again.');
           }
-          
-          setTimeout(() => this.error.set(null), 5000);
+
+          setTimeout(() => 5000);
         }
       });
     } else {
@@ -234,7 +231,7 @@ export class MenuScreen implements OnInit {
 
     if (parent) {
       // Add as child
-      this.menuItemsSignal.update(items => 
+      this.menuItemsSignal.update(items =>
         items.map(item => {
           if (item.id === parent.id) {
             return {
@@ -250,42 +247,42 @@ export class MenuScreen implements OnInit {
       this.menuItemsSignal.update(items => [...items, newItem]);
     }
 
-    this.success.set('Menu item added locally (API not available)');
+    this.alertService.success('Menu item added locally (API not available)');
     this.addItemForm.reset({ responseType: 'CON' });
     this.parentForNewChild.set(null);
     this.isSaving.set(false);
-    
-    setTimeout(() => this.success.set(null), 3000);
+
+    setTimeout(() => 3000);
   }
 
   addChild(parent: MenuItem): void {
     console.log('➕ Adding child to:', parent.trigger);
     this.parentForNewChild.set(parent);
-    this.success.set(`Adding child item under "${parent.trigger}"`);
-    
+    this.alertService.error(`Adding child item under "${parent.trigger}"`);
+
     // Scroll to form
     setTimeout(() => {
       const form = document.querySelector('form');
       form?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
-    
-    setTimeout(() => this.success.set(null), 3000);
+
+    setTimeout(() => 3000);
   }
 
   editItem(item: MenuItem): void {
     console.log('✏️ Editing item:', item.trigger);
     this.editingItem.set(item);
-    
+
     // Populate form with item data
     this.addItemForm.patchValue({
       trigger: item.trigger,
       responseType: item.responseType,
       responseText: item.responseText
     });
-    
-    this.success.set(`Editing item "${item.trigger}"`);
-    setTimeout(() => this.success.set(null), 3000);
-    
+
+    this.alertService.success(`Editing item "${item.trigger}"`);
+    setTimeout(() => 3000);
+
     // TODO: Implement update logic when form is submitted
   }
 
@@ -298,38 +295,29 @@ export class MenuScreen implements OnInit {
     }
 
     console.log('🗑️ Deleting item:', item.trigger);
-    
+
     this.isDeleting.update(state => ({ ...state, [item.id!]: true }));
-    this.error.set(null);
 
     this.clientApi.deleteMenuItem(item.id).subscribe({
       next: (response) => {
-        console.log('✅ Menu item deleted successfully:', response);
-        
         // Remove from local state
         this.menuItemsSignal.update(items => items.filter((_, i) => i !== index));
-        
-        this.success.set(`Menu item "${item.trigger}" deleted successfully`);
+
+        this.alertService.success(`Menu item "${item.trigger}" deleted successfully`);
         this.isDeleting.update(state => ({ ...state, [item.id!]: false }));
-        
-        setTimeout(() => this.success.set(null), 3000);
+
+        setTimeout(() => 3000);
       },
       error: (err) => {
         console.error('❌ Error deleting menu item:', err);
         this.isDeleting.update(state => ({ ...state, [item.id!]: false }));
-        
+
         if (err.status === 404) {
-          console.log('⚠️ API not available. Deleting locally.');
           this.menuItemsSignal.update(items => items.filter((_, i) => i !== index));
-          this.success.set(`Menu item "${item.trigger}" deleted locally`);
+          this.alertService.success(`Menu item "${item.trigger}" deleted locally`);
         } else {
-          this.error.set('Failed to delete menu item. Please try again.');
+          this.alertService.error('Failed to delete menu item. Please try again.');
         }
-        
-        setTimeout(() => {
-          this.error.set(null);
-          this.success.set(null);
-        }, 3000);
       }
     });
   }
@@ -343,13 +331,13 @@ export class MenuScreen implements OnInit {
     }
 
     console.log('🗑️ Deleting child item:', child.trigger);
-    
+
     this.isDeleting.update(state => ({ ...state, [child.id!]: true }));
 
     this.clientApi.deleteMenuItem(child.id).subscribe({
       next: (response) => {
         console.log('✅ Child menu item deleted successfully:', response);
-        
+
         // Remove child from parent
         this.menuItemsSignal.update(items =>
           items.map(item => {
@@ -362,16 +350,16 @@ export class MenuScreen implements OnInit {
             return item;
           })
         );
-        
-        this.success.set(`Menu item "${child.trigger}" deleted successfully`);
+
+        this.alertService.success(`Menu item "${child.trigger}" deleted successfully`);
         this.isDeleting.update(state => ({ ...state, [child.id!]: false }));
-        
-        setTimeout(() => this.success.set(null), 3000);
+
+        setTimeout(() => 3000);
       },
       error: (err) => {
         console.error('❌ Error deleting child menu item:', err);
         this.isDeleting.update(state => ({ ...state, [child.id!]: false }));
-        
+
         if (err.status === 404) {
           console.log('⚠️ API not available. Deleting locally.');
           this.menuItemsSignal.update(items =>
@@ -385,15 +373,10 @@ export class MenuScreen implements OnInit {
               return item;
             })
           );
-          this.success.set(`Menu item "${child.trigger}" deleted locally`);
+          this.alertService.success(`Menu item "${child.trigger}" deleted locally`);
         } else {
-          this.error.set('Failed to delete menu item. Please try again.');
+          this.alertService.error('Failed to delete menu item. Please try again.');
         }
-        
-        setTimeout(() => {
-          this.error.set(null);
-          this.success.set(null);
-        }, 3000);
       }
     });
   }

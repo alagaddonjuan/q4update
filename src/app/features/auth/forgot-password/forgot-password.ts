@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { authService } from '../../../core/services/auth'; // Update path as needed
+import { AuthService } from '../../../core/services/auth'; // Update path as needed
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -15,7 +15,7 @@ import { finalize } from 'rxjs/operators';
 export class ForgotPassword implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
-  private readonly authService = inject(authService);
+  private readonly authService = inject(AuthService);
 
   forgotPasswordForm!: FormGroup;
   illustrationPath: string = 'assets/form-image.png';
@@ -42,7 +42,7 @@ export class ForgotPassword implements OnInit {
     console.log()
 
     const email = this.forgotPasswordForm.value.email;
-    
+
     // Clear previous messages
     this.errorMessage.set('');
     this.showSuccessMessage.set(false);
@@ -56,19 +56,19 @@ export class ForgotPassword implements OnInit {
       .subscribe({
         next: (response) => {
           console.log('Password reset email sent successfully:', response);
-          
+
           // Store the submitted email for display in success message
           this.submittedEmail.set(email);
           this.showSuccessMessage.set(true);
-          
+
           // Reset the form
           this.forgotPasswordForm.reset();
-          
+
           // Hide success message after 5 seconds
           setTimeout(() => {
             this.showSuccessMessage.set(false);
           }, 5000);
-          
+
           // Optionally redirect to login after a delay
           // setTimeout(() => {
           //   this.router.navigate(['/auth/login']);
@@ -76,7 +76,7 @@ export class ForgotPassword implements OnInit {
         },
         error: (error) => {
           console.error('Failed to send password reset email:', error);
-          
+
           // Handle different error scenarios
           if (error.status === 404) {
             this.errorMessage.set('No account found with this email address.');
@@ -84,11 +84,11 @@ export class ForgotPassword implements OnInit {
             this.errorMessage.set('Too many requests. Please try again later.');
           } else {
             this.errorMessage.set(
-              error.error?.message || 
+              error.error?.message ||
               'Failed to send password reset email. Please try again.'
             );
           }
-          
+
           // Clear error message after 5 seconds
           setTimeout(() => {
             this.errorMessage.set('');

@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ClientApiService } from '../../../core/services/client-api';
+import { AlertService } from '../../../core/services/alert.service';
 
 interface Transaction {
   date: string;
@@ -20,12 +21,12 @@ interface Transaction {
 export class BillingScreen implements OnInit {
   private readonly apiService = inject(ClientApiService);
   private readonly fb = inject(FormBuilder);
+  alertService = inject(AlertService);
 
   buyTokensForm: FormGroup;
   conversionRate = signal<number>(1);
   transactions = signal<Transaction[]>([]);
   isLoading = signal<boolean>(false);
-  error = signal<string | null>(null);
 
   constructor() {
     this.buyTokensForm = this.fb.group({
@@ -44,16 +45,15 @@ export class BillingScreen implements OnInit {
 
   private loadTransactions(): void {
     this.isLoading.set(true);
-    this.error.set(null);
 
     this.apiService.getDashboard().subscribe({
       next: (data) => {
         // Map API transactions to your Transaction interface
         const transactionsData = data?.transactions || [];
         const mappedTransactions: Transaction[] = transactionsData.map((tx: any) => ({
-          date: new Date(tx.created_at).toLocaleString('en-US', { 
+          date: new Date(tx.created_at).toLocaleString('en-US', {
             month: 'numeric',
-            day: 'numeric', 
+            day: 'numeric',
             year: 'numeric',
             hour: 'numeric',
             minute: '2-digit',
@@ -65,13 +65,13 @@ export class BillingScreen implements OnInit {
           tokens: tx.tokens || tx.amount, // Adjust based on your API response
           status: tx.status || 'Pending'
         }));
-        
+
         this.transactions.set(mappedTransactions);
         this.isLoading.set(false);
       },
       error: (err) => {
         console.error('Error loading transactions:', err);
-        this.error.set('Failed to load transactions. Please try again later.');
+        this.alertService.error('Failed to load transactions. Please try again later.');
         this.transactions.set([]);
         this.isLoading.set(false);
       }
@@ -85,35 +85,33 @@ export class BillingScreen implements OnInit {
 
     const amount = this.buyTokensForm.get('amount')?.value;
     this.isLoading.set(true);
-    this.error.set(null);
 
     const paymentRequest = { amount: amount.toString() };
-    
-    const paymentObservable = method === 'paystack' 
+
+    const paymentObservable = method === 'paystack'
       ? this.apiService.initializePaystackPayment(paymentRequest)
       : this.apiService.initializeSquadPayment(paymentRequest);
 
     paymentObservable.subscribe({
       next: (response) => {
         console.log('Payment initialized:', response);
-        
+
         // If the API returns a payment URL, redirect to it
         if (response.authorization_url || response.checkout_url) {
           window.location.href = response.authorization_url || response.checkout_url;
         } else {
           // Otherwise, show success message and reload transactions
-          alert(`Payment initiated successfully!\nAmount: ₦${amount}\nTokens: ${this.calculatedTokens}`);
+          this.alertService.error(`Payment initiated successfully!\nAmount: ₦${amount}\nTokens: ${this.calculatedTokens}`);
           this.loadTransactions();
         }
-        
+
         this.buyTokensForm.reset();
         this.isLoading.set(false);
       },
       error: (err) => {
         console.error('Payment error:', err);
-        this.error.set(err.error?.message || 'Payment initialization failed');
+        this.alertService.error(err.error?.message || 'Payment initialization failed');
         this.isLoading.set(false);
-        alert(`Payment failed: ${this.error()}`);
       }
     });
   }

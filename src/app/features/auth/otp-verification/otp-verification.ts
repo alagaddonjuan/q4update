@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { authService } from '../../../core/services/auth'; // Update path as needed
+import { AuthService } from '../../../core/services/auth'; // Update path as needed
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -13,23 +13,23 @@ import { finalize } from 'rxjs/operators';
   styleUrl: './otp-verification.css'
 })
 export class OtpVerification implements OnInit, OnDestroy {
-  private readonly authService = inject(authService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   // Placeholder path for the illustration image on the left.
   illustrationPath: string = 'assets/otp-verification.png';
 
   // Array to hold individual OTP digits
-  otpDigits: string[] = ['', '', '', '', '']; 
-  
+  otpDigits: string[] = ['', '', '', '', ''];
+
   // Combine digits into a single string for submission
-  otpCode: string = ''; 
+  otpCode: string = '';
 
   // Signals for reactive state management
   readonly isLoading = signal<boolean>(false);
   readonly errorMessage = signal<string>('');
   readonly successMessage = signal<string>('');
-  
+
   // Timer for resend functionality
   resendCountdown = signal<number>(60);
   countdownInterval: any;
@@ -39,7 +39,7 @@ export class OtpVerification implements OnInit, OnDestroy {
 
   // Placeholder for the email/phone number the OTP was sent to
   // You would typically get this from a previous route or service.
-  recipient: string = 'your_email@example.com'; 
+  recipient: string = 'your_email@example.com';
 
   ngOnInit(): void {
     // Start countdown when component initializes
@@ -99,7 +99,7 @@ export class OtpVerification implements OnInit, OnDestroy {
     const pasteData = event.clipboardData?.getData('text');
     if (pasteData) {
       const pasteDigits = pasteData.trim().split('').filter(char => /\d/.test(char)); // Filter to get only digits
-      
+
       for (let i = 0; i < this.otpDigits.length; i++) {
         if (pasteDigits[i]) {
           this.otpDigits[i] = pasteDigits[i];
@@ -144,12 +144,12 @@ export class OtpVerification implements OnInit, OnDestroy {
         next: (response) => {
           console.log('OTP verification successful:', response);
           this.successMessage.set('Verification successful! Redirecting...');
-          
+
           // Store auth data if returned in response
           if (response.token && response.isAdmin !== undefined) {
             // The service will handle storing token and admin status
           }
-          
+
           // Redirect to dashboard or appropriate page after successful verification
           setTimeout(() => {
             this.router.navigate(['/dashboard']);
@@ -158,10 +158,10 @@ export class OtpVerification implements OnInit, OnDestroy {
         error: (error) => {
           console.error('OTP verification failed:', error);
           this.errorMessage.set(
-            error.error?.message || 
+            error.error?.message ||
             'Invalid or expired OTP. Please try again.'
           );
-          
+
           // Clear OTP fields on error
           this.clearOtpFields();
         }
@@ -230,7 +230,7 @@ export class OtpVerification implements OnInit, OnDestroy {
   private clearOtpFields(): void {
     this.otpDigits = ['', '', '', '', ''];
     this.otpCode = '';
-    
+
     // Focus on first input
     const firstInput = document.getElementById('otp-input-0');
     if (firstInput) {

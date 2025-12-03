@@ -1,7 +1,7 @@
-import { Component, OnInit,inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder,FormGroup, Validators, ReactiveFormsModule, FormControl } from '@angular/forms';
-import { authService }  from '../../../core/services/auth';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { AuthService } from '../../../core/services/auth';
 import { Router, RouterLink } from '@angular/router';
 import { LoginRequest } from '../../../core/models/api.model';
 
@@ -9,13 +9,13 @@ import { LoginRequest } from '../../../core/models/api.model';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
 export class Login implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly authService = inject(authService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   signinForm: FormGroup;
@@ -63,7 +63,7 @@ export class Login implements OnInit {
         next: (response) => {
           this.isLoading.set(false);
           // console.log('Login successful:', response);
-          
+
           // Navigate based on user role
           if (response.isAdmin) {
             this.router.navigate(['/admin']);
@@ -73,7 +73,7 @@ export class Login implements OnInit {
         },
         error: (error) => {
           this.isLoading.set(false);
-          
+
           // Handle different error scenarios
           if (error.status === 401) {
             this.errorMessage.set('Invalid email or password');
@@ -84,7 +84,7 @@ export class Login implements OnInit {
           } else {
             this.errorMessage.set('An error occurred. Please try again.');
           }
-          
+
           console.error('Login error:', error);
         }
       });
@@ -98,7 +98,7 @@ export class Login implements OnInit {
     console.log('Sign in with Google clicked');
     // Handle Google sign-in logic here
   }
-   // Helper method to mark all form controls as touched
+  // Helper method to mark all form controls as touched
   private markFormGroupTouched(formGroup: FormGroup): void {
     Object.keys(formGroup.controls).forEach(key => {
       const control = formGroup.get(key);

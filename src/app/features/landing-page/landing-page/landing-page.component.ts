@@ -1,7 +1,7 @@
 import { CommonModule, NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { authService } from '../../../core/services/auth';
+import { AuthService } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-landing-page',
@@ -16,7 +16,7 @@ export class LandingPageComponent {
   isMenuOpen = false;
 
   router = inject(Router);
-  authService = inject(authService);
+  authService = inject(AuthService);
 
   faqs = [
     {
