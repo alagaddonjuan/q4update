@@ -1,7 +1,7 @@
 import { Component, ElementRef, HostListener, Input, ViewChild, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { authService } from '../../../../core/services/auth';
+import { AuthService } from '../../../../core/services/auth';
 import { DashboardData } from '../../../../core/models/api.model';
 import { ClientApiService } from '../../../../core/services/client-api';
 
@@ -13,7 +13,7 @@ import { ClientApiService } from '../../../../core/services/client-api';
 })
 export class HeaderComponent {
 
-    private readonly authService = inject(authService);
+    private readonly authService = inject(AuthService);
     private readonly clientApi = inject(ClientApiService);
     @Input() pageTitle: string = 'Dashboard';
     @Input() userType: 'admin' | 'client' = 'client';

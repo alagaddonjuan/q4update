@@ -2,8 +2,9 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ClientApiService } from '../../../core/services/client-api';
-import { authService } from '../../../core/services/auth';
+import { AuthService } from '../../../core/services/auth';
 import { ApiKeyRequest } from '../../../core/models/api.model';
+import { AlertService } from '../../../core/services/alert.service';
 
 interface ApiKey {
   id?: number;
@@ -26,12 +27,13 @@ interface ApiKey {
 export class ProfileScreen implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly clientApi = inject(ClientApiService);
-  private readonly authService = inject(authService);
-  
+  private readonly authService = inject(AuthService);
+  alertService = inject(AlertService);
+
   profileForm!: FormGroup;
   newApiKeyName: string = '';
   mobileMenuOpen: boolean = false;
-  
+
   // Signals for reactive state management
   private readonly apiKeysSignal = signal<ApiKey[]>([]);
   readonly isLoadingProfile = signal<boolean>(true);
@@ -39,8 +41,6 @@ export class ProfileScreen implements OnInit {
   readonly isSavingProfile = signal<boolean>(false);
   readonly isGeneratingKey = signal<boolean>(false);
   readonly isDeletingKey = signal<{ [key: number]: boolean }>({});
-  readonly error = signal<string | null>(null);
-  readonly success = signal<string | null>(null);
   readonly profileError = signal<string | null>(null);
   readonly profileSuccess = signal<string | null>(null);
   readonly newlyGeneratedKey = signal<string | null>(null);
@@ -71,7 +71,7 @@ export class ProfileScreen implements OnInit {
     this.clientApi.getDashboard().subscribe({
       next: (data) => {
         console.log('👤 Profile data loaded:', data);
-        
+
         if (data.client) {
           this.profileForm.patchValue({
             fullName: data.client.name || '',
@@ -79,12 +79,12 @@ export class ProfileScreen implements OnInit {
             country: data.client.country || ''
           });
         }
-        
+
         this.isLoadingProfile.set(false);
       },
       error: (err) => {
         console.error('❌ Error loading profile:', err);
-        
+
         if (err.status === 404) {
           console.log('⚠️ Using fallback profile data');
           this.profileForm.patchValue({
@@ -94,7 +94,7 @@ export class ProfileScreen implements OnInit {
         } else {
           this.profileError.set('Failed to load profile data.');
         }
-        
+
         this.isLoadingProfile.set(false);
       }
     });
@@ -102,12 +102,10 @@ export class ProfileScreen implements OnInit {
 
   loadApiKeys(): void {
     this.isLoadingKeys.set(true);
-    this.error.set(null);
 
     this.clientApi.getApiKeys().subscribe({
       next: (keys) => {
-        console.log('🔑 API keys loaded:', keys);
-        
+
         const transformedKeys = keys.map(key => ({
           id: key.id,
           name: key.key_name || key.name || 'Unnamed Key',
@@ -121,14 +119,13 @@ export class ProfileScreen implements OnInit {
       },
       error: (err) => {
         console.error('❌ Error loading API keys:', err);
-        
+
         if (err.status === 404) {
-          console.log('⚠️ API keys endpoint not found. Using empty array.');
           this.apiKeysSignal.set([]);
         } else {
-          this.error.set('Failed to load API keys.');
+          this.alertService.error('Failed to load API keys.');
         }
-        
+
         this.isLoadingKeys.set(false);
       }
     });
@@ -157,16 +154,16 @@ export class ProfileScreen implements OnInit {
           console.log('✅ Profile updated successfully:', response);
           this.isSavingProfile.set(false);
           this.profileSuccess.set('Profile updated successfully!');
-          
+
           // Clear password field after successful update
           this.profileForm.patchValue({ password: '' });
-          
+
           setTimeout(() => this.profileSuccess.set(null), 5000);
         },
         error: (err) => {
           console.error('❌ Error updating profile:', err);
           this.isSavingProfile.set(false);
-          
+
           if (err.status === 404) {
             console.log('⚠️ API not available. Showing success locally.');
             this.profileSuccess.set('Profile updated locally (API not available)');
@@ -179,7 +176,7 @@ export class ProfileScreen implements OnInit {
           } else {
             this.profileError.set('Failed to update profile. Please try again.');
           }
-          
+
           setTimeout(() => this.profileError.set(null), 5000);
         }
       });
@@ -193,27 +190,22 @@ export class ProfileScreen implements OnInit {
 
   generateApiKey(): void {
     if (!this.newApiKeyName.trim()) {
-      this.error.set('Please enter a name for the API key');
-      setTimeout(() => this.error.set(null), 3000);
+      this.alertService.info('Please enter a name for the API key');
       return;
     }
 
     this.isGeneratingKey.set(true);
-    this.error.set(null);
-    this.success.set(null);
     this.newlyGeneratedKey.set(null);
 
     const keyData: ApiKeyRequest = {
       key_name: this.newApiKeyName.trim()
     };
 
-    console.log('🔑 Generating API key:', keyData);
-
     this.clientApi.createApiKey(keyData).subscribe({
       next: (response) => {
         console.log('✅ API key generated successfully:', response);
         this.isGeneratingKey.set(false);
-        
+
         // Store the full key temporarily for display
         if (response.api_key) {
           this.newlyGeneratedKey.set(response.api_key);
@@ -223,51 +215,44 @@ export class ProfileScreen implements OnInit {
           id: response.id,
           name: this.newApiKeyName,
           key: response.api_key || this.generateRandomKey(),
-          created: new Date().toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric' 
+          created: new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
           }),
           whitelist_ips: ''
         };
 
         this.apiKeysSignal.update(keys => [...keys, newKey]);
         this.newApiKeyName = '';
-        this.success.set('API key generated successfully! Save it now, you won\'t be able to see it again.');
-        
+        this.alertService.success('API key generated successfully! Save it now, you won\'t be able to see it again.');
+
         // Clear the newly generated key display after 30 seconds
-        setTimeout(() => {
-          this.newlyGeneratedKey.set(null);
-          this.success.set(null);
-        }, 30000);
+        setTimeout(() => 30000);
       },
       error: (err) => {
         console.error('❌ Error generating API key:', err);
         this.isGeneratingKey.set(false);
-        
+
         if (err.status === 404) {
-          console.log('⚠️ API not available. Creating key locally.');
           const localKey: ApiKey = {
             id: Date.now(),
             name: this.newApiKeyName,
             key: this.generateRandomKey(),
-            created: new Date().toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'short', 
-              day: 'numeric' 
+            created: new Date().toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
             })
           };
           this.apiKeysSignal.update(keys => [...keys, localKey]);
           this.newApiKeyName = '';
-          this.success.set('API key created locally (API not available)');
-          setTimeout(() => this.success.set(null), 5000);
+          this.alertService.success('API key created locally (API not available)');
         } else if (err.status === 400) {
-          this.error.set(err.error?.message || 'Invalid API key name.');
+          this.alertService.error(err.error?.message || 'Invalid API key name.');
         } else {
-          this.error.set('Failed to generate API key. Please try again.');
+          this.alertService.error('Failed to generate API key. Please try again.');
         }
-        
-        setTimeout(() => this.error.set(null), 5000);
       }
     });
   }
@@ -283,56 +268,42 @@ export class ProfileScreen implements OnInit {
       return;
     }
 
-    console.log('🗑️ Deleting API key:', key.name);
-    
     this.isDeletingKey.update(state => ({ ...state, [key.id!]: true }));
-    this.error.set(null);
 
     this.clientApi.deleteApiKey(key.id).subscribe({
       next: (response) => {
         console.log('✅ API key deleted successfully:', response);
-        
+
         this.apiKeysSignal.update(keys => keys.filter((_, i) => i !== index));
-        this.success.set(`API key "${key.name}" deleted successfully`);
+        this.alertService.success(`API key "${key.name}" deleted successfully`);
         this.isDeletingKey.update(state => ({ ...state, [key.id!]: false }));
-        
-        setTimeout(() => this.success.set(null), 3000);
       },
       error: (err) => {
         console.error('❌ Error deleting API key:', err);
+        this.alertService.error('❌ Error deleting API key:', err);
         this.isDeletingKey.update(state => ({ ...state, [key.id!]: false }));
-        
+
         if (err.status === 404) {
-          console.log('⚠️ API not available. Deleting locally.');
           this.apiKeysSignal.update(keys => keys.filter((_, i) => i !== index));
-          this.success.set(`API key "${key.name}" deleted locally`);
+          this.alertService.success(`API key "${key.name}" deleted locally`);
         } else {
-          this.error.set('Failed to delete API key. Please try again.');
+          this.alertService.error('Failed to delete API key. Please try again.');
         }
-        
-        setTimeout(() => {
-          this.error.set(null);
-          this.success.set(null);
-        }, 3000);
       }
     });
   }
 
   copyToClipboard(text: string): void {
     navigator.clipboard.writeText(text).then(() => {
-      this.success.set('API key copied to clipboard!');
-      setTimeout(() => this.success.set(null), 2000);
+      this.alertService.success('API key copied to clipboard!');
     }).catch(err => {
       console.error('Failed to copy:', err);
-      this.error.set('Failed to copy to clipboard');
-      setTimeout(() => this.error.set(null), 2000);
+      this.alertService.error('Failed to copy to clipboard');
     });
   }
 
   enable2FA(): void {
-    console.log('🔐 Enable 2FA clicked');
-    this.error.set('2FA setup is not yet implemented. Coming soon!');
-    setTimeout(() => this.error.set(null), 3000);
+    this.alertService.error('2FA setup is not yet implemented. Coming soon!');
   }
 
   toggleMobileMenu(): void {
@@ -352,18 +323,18 @@ export class ProfileScreen implements OnInit {
 
   private formatDate(dateString: string | undefined): string {
     if (!dateString) {
-      return new Date().toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
+      return new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
       });
     }
-    
+
     try {
-      return new Date(dateString).toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
       });
     } catch (e) {
       return dateString;
@@ -390,41 +361,41 @@ export class ProfileScreen implements OnInit {
   // Generate initials from user's name for avatar
   getInitials(name?: string): string {
     const userName = name || this.profileForm.get('fullName')?.value || 'User';
-    
+
     // Split by spaces and get first letter of each word
     const words = userName.trim().split(/\s+/);
-    
+
     if (words.length === 0) return 'U';
-    
+
     // Get first letter of first name and last name (or first two words)
     if (words.length === 1) {
       // Single word: take first two characters
       return words[0].substring(0, 2).toUpperCase();
     }
-    
+
     // Multiple words: take first letter of first and last word
     const firstInitial = words[0].charAt(0);
     const lastInitial = words[words.length - 1].charAt(0);
-    
+
     return (firstInitial + lastInitial).toUpperCase();
   }
 
   // Generate consistent color based on name
   getAvatarColor(name?: string): string {
     const userName = name || this.profileForm.get('fullName')?.value || 'User';
-    
+
     // Generate a hash from the name
     let hash = 0;
     for (let i = 0; i < userName.length; i++) {
       hash = userName.charCodeAt(i) + ((hash << 5) - hash);
     }
-    
+
     // Predefined color palette (professional looking colors)
     const colors = [
       'bg-teal-700',
 
     ];
-    
+
     // Use hash to pick a color
     const index = Math.abs(hash) % colors.length;
     return colors[index];
@@ -433,13 +404,13 @@ export class ProfileScreen implements OnInit {
   // Alternative: Get gradient background
   getAvatarGradient(name?: string): string {
     const userName = name || this.profileForm.get('fullName')?.value || 'User';
-    
+
     // Generate a hash from the name
     let hash = 0;
     for (let i = 0; i < userName.length; i++) {
       hash = userName.charCodeAt(i) + ((hash << 5) - hash);
     }
-    
+
     // Predefined gradient combinations
     const gradients = [
       'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -453,7 +424,7 @@ export class ProfileScreen implements OnInit {
       'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
       'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)'
     ];
-    
+
     const index = Math.abs(hash) % gradients.length;
     return gradients[index];
   }

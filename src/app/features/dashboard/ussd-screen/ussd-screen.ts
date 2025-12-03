@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClientApiService } from '../../../core/services/client-api';
+import { AlertService } from '../../../core/services/alert.service';
 
 interface UssdLog {
   id: string;
@@ -21,12 +22,12 @@ interface UssdLog {
 })
 export class UssdScreen implements OnInit {
   private readonly clientApi = inject(ClientApiService);
-  
+  alertService = inject(AlertService);
+
   // Signals for reactive state management
   private readonly ussdLogsSignal = signal<UssdLog[]>([]);
   readonly isLoading = signal<boolean>(true);
   readonly isExporting = signal<boolean>(false);
-  readonly error = signal<string | null>(null);
   readonly ussdCode = signal<string>('*347*102#');
   readonly totalSessions = signal<number>(0);
   readonly completedSessions = signal<number>(0);
@@ -43,12 +44,10 @@ export class UssdScreen implements OnInit {
 
   loadUssdLogs(): void {
     this.isLoading.set(true);
-    this.error.set(null);
 
     this.clientApi.getDashboard().subscribe({
       next: (data) => {
-        console.log('📊 Dashboard data loaded:', data);
-        
+
         if (data.ussd_logs && data.ussd_logs.length > 0) {
           const transformedLogs = data.ussd_logs.map((log, index) => ({
             id: log.id || `ussd-${index}`,
@@ -75,7 +74,7 @@ export class UssdScreen implements OnInit {
       },
       error: (err) => {
         console.error('❌ Error loading USSD logs:', err);
-        this.error.set('Failed to load USSD logs. Please try again.');
+        this.alertService.error('Failed to load USSD logs. Please try again.');
         this.isLoading.set(false);
       }
     });
@@ -83,8 +82,8 @@ export class UssdScreen implements OnInit {
 
   calculateStatistics(logs: UssdLog[]): void {
     this.totalSessions.set(logs.length);
-    
-    const completed = logs.filter(log => 
+
+    const completed = logs.filter(log =>
       log.status === 'Success' || log.status === 'Completed'
     ).length;
     this.completedSessions.set(completed);
@@ -98,9 +97,9 @@ export class UssdScreen implements OnInit {
 
   exportCSV(): void {
     const logs = this.ussdLogsSignal();
-    
+
     if (logs.length === 0) {
-      alert('No USSD logs to export');
+      this.alertService.info('No USSD logs to export');
       return;
     }
 
@@ -109,14 +108,14 @@ export class UssdScreen implements OnInit {
     // Try to export from API first
     this.clientApi.exportUssdLogs().subscribe({
       next: (blob) => {
-        console.log('✅ USSD logs exported from API');
         this.downloadBlob(blob, `ussd-logs-${Date.now()}.csv`);
         this.isExporting.set(false);
+        this.alertService.success('USSD logs exported successfully!');
       },
       error: (err) => {
         console.error('❌ Error exporting from API:', err);
-        console.log('📄 Using fallback: Creating CSV from local data');
-        
+        this.alertService.warning('Failed to export logs');
+
         // Fallback: Create CSV from local data
         this.exportLocalCSV(logs);
         this.isExporting.set(false);
@@ -128,9 +127,9 @@ export class UssdScreen implements OnInit {
     // Create CSV header
     const headers = ['Date', 'Phone Number', 'Session ID', 'Final Input', 'Status', 'Cost'];
     const csvHeader = headers.join(',');
-    
+
     // Create CSV rows
-    const csvRows = logs.map(log => 
+    const csvRows = logs.map(log =>
       [
         `"${log.date}"`,
         `"${log.phoneNumber}"`,
@@ -140,15 +139,13 @@ export class UssdScreen implements OnInit {
         `"${log.cost}"`
       ].join(',')
     );
-    
+
     // Combine header and rows
     const csv = [csvHeader, ...csvRows].join('\n');
-    
+
     // Create and download file
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     this.downloadBlob(blob, `ussd-logs-${Date.now()}.csv`);
-    
-    console.log('✅ CSV exported successfully from local data');
   }
 
   private downloadBlob(blob: Blob, filename: string): void {
@@ -167,17 +164,17 @@ export class UssdScreen implements OnInit {
   copyUssdCode(): void {
     const code = this.ussdCode();
     navigator.clipboard.writeText(code).then(() => {
-      alert(`USSD code ${code} copied to clipboard!`);
+      this.alertService.success(`USSD code ${code} copied to clipboard!`);
     }).catch(err => {
       console.error('Failed to copy:', err);
-      alert('Failed to copy USSD code');
+      this.alertService.error('Failed to copy USSD code');
     });
   }
 
   // Helper methods
   private formatDate(timestamp: string): string {
     if (!timestamp) return new Date().toLocaleString();
-    
+
     try {
       return new Date(timestamp).toLocaleString('en-NG', {
         year: 'numeric',
@@ -193,16 +190,16 @@ export class UssdScreen implements OnInit {
   }
 
   private formatCost(cost: number | string): string {
-    const numericCost = typeof cost === 'string' 
-      ? parseFloat(cost.replace(/[₦,]/g, '')) 
+    const numericCost = typeof cost === 'string'
+      ? parseFloat(cost.replace(/[₦,]/g, ''))
       : cost;
-    
+
     return `₦${numericCost.toFixed(2)}`;
   }
 
   private normalizeStatus(status: string): string {
     if (!status) return 'Unknown';
-    
+
     const statusMap: { [key: string]: string } = {
       'success': 'Success',
       'completed': 'Success',

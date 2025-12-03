@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
 import { Router, CanActivateFn, CanActivateChildFn } from '@angular/router';
-import { authService } from '../services/auth';
+import { AuthService } from '../services/auth';
 
 export const authGuard: CanActivateFn = () => {
-  const auth = inject(authService);
+  const auth = inject(AuthService);
   const router = inject(Router);
 
   if (auth.isAuthenticated()) {
@@ -15,7 +15,7 @@ export const authGuard: CanActivateFn = () => {
 };
 
 export const adminGuard: CanActivateFn = () => {
-  const auth = inject(authService);
+  const auth = inject(AuthService);
   const router = inject(Router);
 
   // Check if user is authenticated first
@@ -33,7 +33,7 @@ export const adminGuard: CanActivateFn = () => {
 };
 
 export const clientGuard: CanActivateFn = () => {
-  const auth = inject(authService);
+  const auth = inject(AuthService);
   const router = inject(Router);
 
   // Check if user is authenticated

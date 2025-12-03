@@ -10,7 +10,7 @@ import { LoginRequest, LoginResponse, RegisterRequest } from '../models/api.mode
 @Injectable({
   providedIn: 'root',
 })
-export class authService {
+export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly baseUrl: string;

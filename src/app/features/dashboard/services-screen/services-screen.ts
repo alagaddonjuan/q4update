@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ClientApiService } from '../../../core/services/client-api';
 import { SendSmsRequest, SendAirtimeRequest } from '../../../core/models/api.model';
+import { AlertService } from '../../../core/services/alert.service';
 
 interface SMSLog {
   id: string;
@@ -31,10 +32,11 @@ interface AirtimeLog {
 export class ServicesScreen implements OnInit {
   private readonly clientApi = inject(ClientApiService);
   private readonly fb = inject(FormBuilder);
+  alertService = inject(AlertService);
 
   smsForm: FormGroup;
   airtimeForm: FormGroup;
-  
+
 
   // Signals for reactive state management
   readonly smsLogs = signal<SMSLog[]>([]);
@@ -42,10 +44,6 @@ export class ServicesScreen implements OnInit {
   readonly isSendingSMS = signal<boolean>(false);
   readonly isSendingAirtime = signal<boolean>(false);
   readonly isLoadingLogs = signal<boolean>(true);
-  readonly smsError = signal<string | null>(null);
-  readonly airtimeError = signal<string | null>(null);
-  readonly smsSuccess = signal<string | null>(null);
-  readonly airtimeSuccess = signal<string | null>(null);
   readonly isExportingSMS = signal<boolean>(false);
   readonly isExportingAirtime = signal<boolean>(false);
 
@@ -63,7 +61,6 @@ export class ServicesScreen implements OnInit {
 
   ngOnInit(): void {
     this.loadDashboardData();
-    console.log(this.smsLogs,this.airtimeLogs)
   }
 
   loadDashboardData(): void {
@@ -72,7 +69,7 @@ export class ServicesScreen implements OnInit {
     this.clientApi.getDashboard().subscribe({
       next: (data) => {
         console.log('📊 Dashboard data loaded:', data);
-        
+
         // Transform SMS logs
         if (data.sms_logs && data.sms_logs.length > 0) {
           const transformedSMS = data.sms_logs.map((log, index) => ({
@@ -110,14 +107,12 @@ export class ServicesScreen implements OnInit {
   sendSMS(): void {
     if (this.smsForm.valid) {
       this.isSendingSMS.set(true);
-      this.smsError.set(null);
-      this.smsSuccess.set(null);
 
       const formValue = this.smsForm.value;
-      
+
       // Handle multiple recipients (comma-separated)
       const recipients = formValue.recipients.split(',').map((r: string) => r.trim());
-      
+
       // Send SMS to each recipient
       const smsRequests = recipients.map((recipient: string) => {
         const smsData: SendSmsRequest = {
@@ -133,14 +128,12 @@ export class ServicesScreen implements OnInit {
         message: formValue.message
       };
 
-      console.log('📤 Sending SMS:', smsData);
-
       this.clientApi.sendSms(smsData).subscribe({
         next: (response) => {
           console.log('✅ SMS sent successfully:', response);
           this.isSendingSMS.set(false);
-          this.smsSuccess.set('SMS sent successfully!');
-          
+          this.alertService.success('SMS sent successfully!');
+
           // Add to logs (prepend to show newest first)
           const newLog: SMSLog = {
             id: `sms-${Date.now()}`,
@@ -151,29 +144,22 @@ export class ServicesScreen implements OnInit {
             cost: response.cost || '₦50.00'
           };
           this.smsLogs.update(logs => [newLog, ...logs]);
-          
+
           // Reset form
           this.smsForm.reset();
-          
-          // Clear success message after 5 seconds
-          setTimeout(() => this.smsSuccess.set(null), 5000);
         },
         error: (err) => {
-          console.error('❌ Error sending SMS:', err);
           this.isSendingSMS.set(false);
-          
+
           if (err.status === 400) {
-            this.smsError.set(err.error?.message || 'Invalid SMS data. Please check your input.');
+            this.alertService.error(err.error?.message || 'Invalid SMS data. Please check your input.');
           } else if (err.status === 402) {
-            this.smsError.set('Insufficient balance. Please top up your account.');
+            this.alertService.error('Insufficient balance. Please top up your account.');
           } else if (err.status === 403) {
-            this.smsError.set('SMS service not available. Please contact support.');
+            this.alertService.error('SMS service not available. Please contact support.');
           } else {
-            this.smsError.set('Failed to send SMS. Please try again.');
+            this.alertService.error('Failed to send SMS. Please try again.');
           }
-          
-          // Clear error after 5 seconds
-          setTimeout(() => this.smsError.set(null), 5000);
         }
       });
     } else {
@@ -187,8 +173,6 @@ export class ServicesScreen implements OnInit {
   sendAirtime(): void {
     if (this.airtimeForm.valid) {
       this.isSendingAirtime.set(true);
-      this.airtimeError.set(null);
-      this.airtimeSuccess.set(null);
 
       const formValue = this.airtimeForm.value;
       const airtimeData: SendAirtimeRequest = {
@@ -202,8 +186,8 @@ export class ServicesScreen implements OnInit {
         next: (response) => {
           console.log('✅ Airtime sent successfully:', response);
           this.isSendingAirtime.set(false);
-          this.airtimeSuccess.set('Airtime sent successfully!');
-          
+          this.alertService.success('Airtime sent successfully!');
+
           // Add to logs (prepend to show newest first)
           const newLog: AirtimeLog = {
             id: `airtime-${Date.now()}`,
@@ -213,29 +197,23 @@ export class ServicesScreen implements OnInit {
             status: 'Completed'
           };
           this.airtimeLogs.update(logs => [newLog, ...logs]);
-          
+
           // Reset form
           this.airtimeForm.reset();
-          
-          // Clear success message after 5 seconds
-          setTimeout(() => this.airtimeSuccess.set(null), 5000);
         },
         error: (err) => {
           console.error('❌ Error sending Airtime:', err);
           this.isSendingAirtime.set(false);
-          
+
           if (err.status === 400) {
-            this.airtimeError.set(err.error?.message || 'Invalid phone number or amount.');
+            this.alertService.error(err.error?.message || 'Invalid phone number or amount.');
           } else if (err.status === 402) {
-            this.airtimeError.set('Insufficient balance. Please top up your account.');
+            this.alertService.error('Insufficient balance. Please top up your account.');
           } else if (err.status === 403) {
-            this.airtimeError.set('Airtime service not available. Please contact support.');
+            this.alertService.error('Airtime service not available. Please contact support.');
           } else {
-            this.airtimeError.set('Failed to send airtime. Please try again.');
+            this.alertService.error('Failed to send airtime. Please try again.');
           }
-          
-          // Clear error after 5 seconds
-          setTimeout(() => this.airtimeError.set(null), 5000);
         }
       });
     } else {
@@ -248,9 +226,9 @@ export class ServicesScreen implements OnInit {
 
   exportSMSLogs(): void {
     const logs = this.smsLogs();
-    
+
     if (logs.length === 0) {
-      alert('No SMS logs to export');
+      this.alertService.warning('No SMS logs to export');
       return;
     }
 
@@ -261,11 +239,13 @@ export class ServicesScreen implements OnInit {
         console.log('✅ SMS logs exported');
         this.downloadBlob(blob, `sms-logs-${Date.now()}.csv`);
         this.isExportingSMS.set(false);
+        this.alertService.success('logs exported successfully!');
       },
       error: (err) => {
         console.error('❌ Error exporting SMS logs:', err);
+        this.alertService.warning('Failed to export logs');
         this.isExportingSMS.set(false);
-        
+
         // Fallback: Create CSV from local data
         const csv = this.convertToCSV(logs, ['date', 'recipient', 'message', 'status', 'cost']);
         this.downloadCSV(csv, `sms-logs-${Date.now()}.csv`);
@@ -275,9 +255,9 @@ export class ServicesScreen implements OnInit {
 
   exportAirtimeLogs(): void {
     const logs = this.airtimeLogs();
-    
+
     if (logs.length === 0) {
-      alert('No Airtime logs to export');
+      this.alertService.warning('No Airtime logs to export');
       return;
     }
 
@@ -288,11 +268,13 @@ export class ServicesScreen implements OnInit {
         console.log('✅ Airtime logs exported');
         this.downloadBlob(blob, `airtime-logs-${Date.now()}.csv`);
         this.isExportingAirtime.set(false);
+        this.alertService.success('logs exported successfully!');
       },
       error: (err) => {
         console.error('❌ Error exporting Airtime logs:', err);
+        this.alertService.warning('Failed to export logs');
         this.isExportingAirtime.set(false);
-        
+
         // Fallback: Create CSV from local data
         const csv = this.convertToCSV(logs, ['date', 'phoneNumber', 'amount', 'status']);
         this.downloadCSV(csv, `airtime-logs-${Date.now()}.csv`);
@@ -314,7 +296,7 @@ export class ServicesScreen implements OnInit {
 
   private convertToCSV(data: any[], headers: string[]): string {
     const headerRow = headers.map(h => h.charAt(0).toUpperCase() + h.slice(1)).join(',');
-    const rows = data.map(item => 
+    const rows = data.map(item =>
       headers.map(header => `"${item[header] || ''}"`).join(',')
     );
     return [headerRow, ...rows].join('\n');
