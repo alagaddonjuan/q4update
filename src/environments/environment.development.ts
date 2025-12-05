@@ -3,7 +3,6 @@ export interface Environment {
   apiUrl: string;
 }
 
-
 export const environment: Environment = {
   production: false,
   apiUrl: 'https://coms.q4globalltd.com'

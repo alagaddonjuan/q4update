@@ -6,6 +6,7 @@
 /out-tsc
 /bazel-out
 .angular
+git
 
 # Node
 /node_modules
