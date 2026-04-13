@@ -71,29 +71,29 @@ export class ServicesScreen implements OnInit {
         console.log('📊 Dashboard data loaded:', data);
 
         // Transform SMS logs
-        if (data.sms_logs && data.sms_logs.length > 0) {
-          const transformedSMS = data.sms_logs.map((log, index) => ({
-            id: log.id || `sms-${index}`,
-            date: this.formatDate(log.created_at),
-            recipient: log.recipient || log.to || 'Unknown',
-            message: log.message || '',
-            status: log.status || 'Sent',
-            cost: `₦${log.cost || '0.00'}`
-          }));
-          this.smsLogs.set(transformedSMS);
-        }
+        // if (data.sms_logs && data.sms_logs.length > 0) {
+        //   const transformedSMS = data.sms_logs.map((log, index) => ({
+        //     id: log.id || `sms-${index}`,
+        //     date: this.formatDate(log.created_at),
+        //     recipient: log.recipient || log.to || 'Unknown',
+        //     message: log.message || '',
+        //     status: log.status || 'Sent',
+        //     cost: `₦${log.cost || '0.00'}`
+        //   }));
+        //   this.smsLogs.set(transformedSMS);
+        // }
 
         // Transform Airtime logs
-        if (data.airtime_logs && data.airtime_logs.length > 0) {
-          const transformedAirtime = data.airtime_logs.map((log, index) => ({
-            id: log.id || `airtime-${index}`,
-            date: this.formatDate(log.created_at),
-            phoneNumber: log.phone_number || log.phoneNumber || 'Unknown',
-            amount: `₦${log.amount || '0.00'}`,
-            status: log.status || 'Completed'
-          }));
-          this.airtimeLogs.set(transformedAirtime);
-        }
+        // if (data.airtime_logs && data.airtime_logs.length > 0) {
+        //   const transformedAirtime = data.airtime_logs.map((log, index) => ({
+        //     id: log.id || `airtime-${index}`,
+        //     date: this.formatDate(log.created_at),
+        //     phoneNumber: log.phone_number || log.phoneNumber || 'Unknown',
+        //     amount: `₦${log.amount || '0.00'}`,
+        //     status: log.status || 'Completed'
+        //   }));
+        //   this.airtimeLogs.set(transformedAirtime);
+        // }
 
         this.isLoadingLogs.set(false);
       },
@@ -179,8 +179,6 @@ export class ServicesScreen implements OnInit {
         phoneNumber: formValue.phoneNumber,
         amount: formValue.amount.toString()
       };
-
-      console.log('📤 Sending Airtime:', airtimeData);
 
       this.clientApi.sendAirtime(airtimeData).subscribe({
         next: (response) => {

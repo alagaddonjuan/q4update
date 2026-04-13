@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ClientApiService } from '../../../core/services/client-api';
 import { AuthService } from '../../../core/services/auth';
-import { ApiKeyRequest } from '../../../core/models/api.model';
+import { ApiKeyRequest, Generate2FAResponse, Activate2FARequest } from '../../../core/models/api.model';
 import { AlertService } from '../../../core/services/alert.service';
 
 interface ApiKey {
@@ -39,11 +39,21 @@ export class ProfileScreen implements OnInit {
   readonly isLoadingProfile = signal<boolean>(true);
   readonly isLoadingKeys = signal<boolean>(true);
   readonly isSavingProfile = signal<boolean>(false);
+  readonly isAdmin = this.authService.isAdmin;
   readonly isGeneratingKey = signal<boolean>(false);
   readonly isDeletingKey = signal<{ [key: number]: boolean }>({});
   readonly profileError = signal<string | null>(null);
   readonly profileSuccess = signal<string | null>(null);
   readonly newlyGeneratedKey = signal<string | null>(null);
+
+  // 2FA state management
+  readonly isInitializing2FA = signal<boolean>(false);
+  readonly isVerifying2FA = signal<boolean>(false);
+  readonly show2FADisable = signal<boolean>(false);
+  readonly show2FASetup = signal<boolean>(false);
+  readonly qrCodeData = signal<Generate2FAResponse | null>(null);
+  readonly is2FAEnabled = signal<boolean>(false);
+  twoFactorPin: string = '';
 
   get apiKeys(): ApiKey[] {
     return this.apiKeysSignal();
@@ -56,12 +66,14 @@ export class ProfileScreen implements OnInit {
   }
 
   initializeForm(): void {
+    const user = this.authService.currentUser();
     this.profileForm = this.fb.group({
-      fullName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      fullName: [user?.name || '', Validators.required],
+      email: [user?.email || '', [Validators.required, Validators.email]],
       password: ['', [Validators.minLength(8)]],
       country: ['']
     });
+    this.is2FAEnabled.set(user?.is_2fa_enabled === 1);
   }
 
   loadProfileData(): void {
@@ -70,14 +82,13 @@ export class ProfileScreen implements OnInit {
 
     this.clientApi.getDashboard().subscribe({
       next: (data) => {
-        console.log('👤 Profile data loaded:', data);
 
         if (data.client) {
           this.profileForm.patchValue({
             fullName: data.client.name || '',
             email: data.client.email || '',
-            country: data.client.country || ''
           });
+          this.is2FAEnabled.set(data.client.is_2fa_enabled === 1);
         }
 
         this.isLoadingProfile.set(false);
@@ -87,10 +98,12 @@ export class ProfileScreen implements OnInit {
 
         if (err.status === 404) {
           console.log('⚠️ Using fallback profile data');
+          const user = this.authService.currentUser();
           this.profileForm.patchValue({
-            fullName: 'User',
-            email: 'user@example.com'
+            fullName: user?.name || 'User',
+            email: user?.email || 'user@example.com'
           });
+          this.is2FAEnabled.set(user?.is_2fa_enabled === 1);
         } else {
           this.profileError.set('Failed to load profile data.');
         }
@@ -203,7 +216,6 @@ export class ProfileScreen implements OnInit {
 
     this.clientApi.createApiKey(keyData).subscribe({
       next: (response) => {
-        console.log('✅ API key generated successfully:', response);
         this.isGeneratingKey.set(false);
 
         // Store the full key temporarily for display
@@ -303,7 +315,82 @@ export class ProfileScreen implements OnInit {
   }
 
   enable2FA(): void {
-    this.alertService.error('2FA setup is not yet implemented. Coming soon!');
+    this.isInitializing2FA.set(true);
+    this.clientApi.generate2FA().subscribe({
+      next: (response) => {
+        this.qrCodeData.set(response);
+        this.show2FASetup.set(true);
+        this.isInitializing2FA.set(false);
+      },
+      error: (err) => {
+        console.error('❌ Error initializing 2FA:', err);
+        this.alertService.error('Failed to initialize 2FA setup. Please try again.');
+        this.isInitializing2FA.set(false);
+      }
+    });
+  }
+
+  confirm2FASetup(): void {
+    if (!this.twoFactorPin || this.twoFactorPin.length !== 6) {
+      this.alertService.warning('Please enter the 6-digit verification code.');
+      return;
+    }
+
+    const secret = this.qrCodeData()?.secret;
+    if (!secret) return;
+
+    this.isVerifying2FA.set(true);
+    const request: Activate2FARequest = {
+      token: this.twoFactorPin,
+      secret: secret
+    };
+
+    this.clientApi.activate2FA(request).subscribe({
+      next: () => {
+        this.alertService.success('Two-factor authentication has been enabled!');
+        this.show2FASetup.set(false);
+        this.is2FAEnabled.set(true);
+        this.isVerifying2FA.set(false);
+        this.twoFactorPin = '';
+      },
+      error: (err) => {
+        this.alertService.error(err.error?.message || 'Invalid code. Please try again.');
+        this.isVerifying2FA.set(false);
+      }
+    });
+  }
+
+  disable2FA(): void {
+    if (!this.isAdmin()) {
+      this.alertService.error('Only administrators are authorized to disable 2FA.');
+      return;
+    }
+
+    this.twoFactorPin = '';
+    this.show2FADisable.set(true);
+  }
+
+  confirm2FADisable(): void {
+    if (!this.twoFactorPin || this.twoFactorPin.length !== 6) {
+      this.alertService.warning('Please enter the 6-digit verification code.');
+      return;
+    }
+
+    this.isVerifying2FA.set(true);
+    this.clientApi.disable2FA(this.twoFactorPin).subscribe({
+      next: () => {
+        this.alertService.success('Two-factor authentication has been disabled!');
+        this.show2FADisable.set(false);
+        this.is2FAEnabled.set(false);
+        this.isVerifying2FA.set(false);
+        this.twoFactorPin = '';
+      },
+      error: (err) => {
+        console.error('❌ Error disabling 2FA:', err);
+        this.alertService.error(err.error?.message || 'Invalid code. Please try again.');
+        this.isVerifying2FA.set(false);
+      }
+    });
   }
 
   toggleMobileMenu(): void {

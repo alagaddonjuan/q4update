@@ -1,11 +1,23 @@
 export interface LoginRequest {
   email: string;
   password: string;
+  token?: string;
 }
 
 export interface LoginResponse {
-  token: string;
-  isAdmin: boolean;
+  message: string;
+  token?: string;
+  user?: User;
+  requires_2fa?: boolean;
+}
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  role_id: number;
+  is_admin: number;
+  is_2fa_enabled: number;
 }
 
 export interface RegisterRequest {
@@ -14,14 +26,56 @@ export interface RegisterRequest {
   password: string;
 }
 
+// export interface DashboardData {
+//   client: any;
+//   stats: any;
+//   sms_logs: any[];
+//   airtime_logs: any[];
+//   ussd_logs: any[];
+//   transactions: any[];
+//   api_keys: any[];
+// }
+
 export interface DashboardData {
   client: any;
-  stats: any;
-  sms_logs: any[];
-  airtime_logs: any[];
-  ussd_logs: any[];
-  transactions: any[];
-  api_keys: any[];
+  role: string;
+  api_key: string;
+  is_2fa_enabled: number;
+  transactions?: any[];
+  stats: stats;
+
+}
+
+export interface stats {
+  users: number;
+  sms: number;
+  revenue: string;
+}
+
+export interface DashboardDataResponse {
+  role: string;
+  client: Client;
+  stats: Stats;
+  chartLabels: string[];
+  ussdChartValues: number[];
+  smsChartValues: number[];
+}
+
+export interface Client {
+  id: number;
+  name: string;
+  email: string;
+  balance: number;
+  token_balance: number;
+  ussd_code: string;
+  api_key: string;
+  sms_rate: number;
+  is_2fa_enabled: number;
+}
+
+export interface Stats {
+  totalSmsSent: number;
+  sms: number;
 }
 
 export interface SendSmsRequest {
@@ -32,6 +86,7 @@ export interface SendSmsRequest {
 export interface SendAirtimeRequest {
   phoneNumber: string;
   amount: string;
+  network?: string;
 }
 
 export interface PaymentInitRequest {
@@ -42,16 +97,37 @@ export interface ApiKeyRequest {
   key_name: string;
 }
 
+export interface CreateMenuRequest {
+  menu_name: string;
+  ussd_code: string;
+}
+
 export interface MenuItemRequest {
-  parent_item_id: number | null;
+  option_number?: string;
   option_trigger: string;
-  response_type: string;
+  option_text?: string;
   response_text: string;
+  action_type?: string;
+  response_type: string;
+  parent_item_id?: number | null;
 }
 
 export interface TeamInviteRequest {
   email: string;
   role_id: number;
+}
+
+export interface RolesResponse {
+  id: number;
+  name: string;
+}
+
+export interface TeamMemberResponse {
+  id?: string;
+  name: string;
+  email: string;
+  role_id: number;
+  status: string;
 }
 
 export interface ManualTopupRequest {
@@ -71,9 +147,41 @@ export interface SendAnnouncementRequest {
 }
 
 export interface AdminStats {
-  clientCount: number;
+  stats: Stats;
+  recentTransactions: RecentTransaction[];
+}
+
+export interface RecentTransaction {
+  id: number;
+  client_id: number;
+  reference: string;
+  amount: string;
+  tokens_purchased: number;
+  status: string;
+  gateway: string;
+  notes: null | string;
+  created_at: Date;
+  client_name: string;
+}
+
+export interface BillingHistory {
+  id: number;
+  client_id: number;
+  type: string;
+  reference: string;
+  amount: string;
+  tokens_purchased: number;
+  status: string;
+  gateway: string;
+  notes: null | string;
+  created_at: Date;
+}
+
+export interface Stats {
+  users: number;
+  sms: number;
+  revenue: string;
   tokensPurchased: string;
-  smsSentCount: number;
 }
 
 export interface PricingTiersResponse {
@@ -88,7 +196,7 @@ export interface PricingTierPrices {
   ussd_multiplier: string;
 }
 
-export interface ClientsResponse {
+export interface ClientsResponseee {
   id: number;
   name: string;
   email: string;
@@ -102,17 +210,74 @@ export interface ClientsResponse {
   pricing_tier_name: null | string;
 }
 
+export interface ClientsResponseWrapper {
+  success: boolean;
+  data: ClientsResponse[];
+}
+
+export interface ClientsResponse {
+  id: number;
+  name: string;
+  email: string;
+  token_balance: number;
+  ussd_code: null | string;
+  status: string;
+  is_admin: number;
+  created_at: Date;
+  sender_id?: null | string;
+  pricing_tier_id: number | null;
+  tier_name: null | string;
+}
+
 export interface UpdateClientDetails {
   name: string;
   ussd_code?: string;
   sender_id?: string;
 }
-
 export interface LogsResponse {
-  smsLogs: any[];
-  airtimeLogs: any[];
-  ussdLogs: UssdLog[];
-  transactions: Transaction[];
+  sms: Sms[];
+  ussd: Ussd[];
+  airtime: Airtime[];
+}
+
+export interface Airtime {
+  id: number;
+  client_id: number;
+  phone_number: string;
+  network: string;
+  amount: string;
+  status: string;
+  created_at: Date;
+  client_name: string;
+}
+
+export interface Sms {
+  id: number;
+  client_id: number;
+  sender_id: string;
+  phone_number: string;
+  message: string;
+  cost: string;
+  status: string;
+  created_at: Date;
+  client_name: string;
+  email: string;
+}
+
+export interface Ussd {
+  id: number;
+  client_id: number;
+  phone_number: string;
+  session_id: string;
+  service_code: string;
+  session_data: string;
+  cost: string;
+  status: string;
+  created_at: Date;
+  logged_at: Date;
+  client_price: string;
+  final_user_string: null;
+  client_name: string;
 }
 
 export interface Transaction {
@@ -128,17 +293,43 @@ export interface Transaction {
   client_name: string;
 }
 
-export interface UssdLog {
-  id: number;
-  client_id: number;
-  session_id: string;
-  phone_number: string;
-  network_code: string;
-  final_user_string: null | string;
-  duration_seconds: number | null;
-  session_cost: string | null;
-  client_price: null | string;
-  status: string;
-  logged_at: Date;
-  client_name: string;
+export interface Enable2FARequest {
+  secret: string;
+  qrcode: string;
+}
+
+export interface Generate2FAResponse {
+  qrCode: string;
+  secret: string;
+}
+
+export interface Activate2FARequest {
+  token: string;
+  secret: string;
+}
+
+export interface Disable2FARequest {
+  token: string;
+}
+
+// Pagination Models
+export interface PaginationState {
+  currentPage: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationState;
+}
+
+export interface PaginationConfig {
+  pageSize?: number;
+  initialPage?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }

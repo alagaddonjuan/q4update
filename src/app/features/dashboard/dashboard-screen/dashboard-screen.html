@@ -90,7 +90,7 @@
       <div class="z-10">
         <p class="text-teal-100 text-xs md:text-sm mb-1">My balance</p>
         <p class="text-xl md:text-2xl lg:text-3xl font-bold">
-          {{ formatCurrency(dashboardData()?.stats?.balance || 0) }}
+          {{ formatCurrency(+(dashboardData()?.client?.balance ?? 0)) }}
         </p>
       </div>
       <img
@@ -104,19 +104,19 @@
   <!-- Stats Cards -->
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-3 md:mb-4">
     @for (stat of stats; track stat.title) {
-    <div class="bg-secondary rounded-lg md:rounded-xl p-3 md:p-4 lg:p-5 shadow-sm">
-      <div class="flex items-start justify-between mb-2 md:mb-3">
-        <div
-          class="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-lg flex items-center justify-center"
-        >
-          <img [src]="stat.icon" [alt]="stat.title" />
+      <div class="bg-secondary rounded-lg md:rounded-xl p-3 md:p-4 lg:p-5 shadow-sm">
+        <div class="flex items-start justify-between mb-2 md:mb-3">
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-lg flex items-center justify-center"
+          >
+            <img [src]="stat.icon" [alt]="stat.title" />
+          </div>
         </div>
+        <h3 class="text-gray-800 font-semibold text-xs md:text-sm mb-0.5 md:mb-1">
+          {{ stat.title }}
+        </h3>
+        <p class="text-gray-500 text-[10px] md:text-xs">{{ stat.value }}</p>
       </div>
-      <h3 class="text-gray-800 font-semibold text-xs md:text-sm mb-0.5 md:mb-1">
-        {{ stat.title }}
-      </h3>
-      <p class="text-gray-500 text-[10px] md:text-xs">{{ stat.value }}</p>
-    </div>
     }
   </div>
 
@@ -145,31 +145,31 @@
       </div>
       <div class="space-y-2 md:space-y-3 max-h-64 lg:max-h-96 overflow-y-auto">
         @for (activity of activities; track activity.user + activity.time) {
-        <div
-          class="flex items-start gap-2 md:gap-3 pb-2 md:pb-3 border-b border-gray-100 last:border-0"
-        >
           <div
-            class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] md:text-xs font-semibold shrink-0"
+            class="flex items-start gap-2 md:gap-3 pb-2 md:pb-3 border-b border-gray-100 last:border-0"
           >
-            {{ getInitials(activity.user) }}
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between items-start mb-0.5 md:mb-1">
-              <p class="text-xs md:text-sm font-medium text-gray-800 truncate pr-2">
-                {{ activity.user }}
-              </p>
-              <span class="text-[10px] md:text-xs text-gray-400 whitespace-nowrap">{{
-                activity.time
-              }}</span>
+            <div
+              class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] md:text-xs font-semibold shrink-0"
+            >
+              {{ getInitials(activity.user) }}
             </div>
-            <div class="flex justify-between">
-              <p class="text-[10px] md:text-xs text-gray-600 truncate">{{ activity.action }}</p>
-              <p class="text-[10px] md:text-xs text-red-500 mt-0.5 md:mt-1 truncate">
-                {{ activity.type }}
-              </p>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-start mb-0.5 md:mb-1">
+                <p class="text-xs md:text-sm font-medium text-gray-800 truncate pr-2">
+                  {{ activity.user }}
+                </p>
+                <span class="text-[10px] md:text-xs text-gray-400 whitespace-nowrap">{{
+                  activity.time
+                }}</span>
+              </div>
+              <div class="flex justify-between">
+                <p class="text-[10px] md:text-xs text-gray-600 truncate">{{ activity.action }}</p>
+                <p class="text-[10px] md:text-xs text-red-500 mt-0.5 md:mt-1 truncate">
+                  {{ activity.type }}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
         }
       </div>
     </div>

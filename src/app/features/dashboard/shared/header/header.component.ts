@@ -2,7 +2,7 @@ import { Component, ElementRef, HostListener, Input, ViewChild, computed, inject
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth';
-import { DashboardData } from '../../../../core/models/api.model';
+import { DashboardData, DashboardDataResponse } from '../../../../core/models/api.model';
 import { ClientApiService } from '../../../../core/services/client-api';
 
 @Component({
@@ -20,7 +20,7 @@ export class HeaderComponent {
 
     @ViewChild('details') details!: ElementRef<HTMLDetailsElement>;
     readonly dashboardData$ = this.clientApi.getDashboard();
-    dashboardDataSnapshot: DashboardData | null = null;
+    dashboardDataSnapshot: DashboardDataResponse | null = null;
 
     constructor(private router: Router,
         private elementRef: ElementRef,) { }
@@ -44,11 +44,12 @@ export class HeaderComponent {
         this.authService.logout();
     }
     getInitials(name?: string): string {
-        const userName = name || this.dashboardDataSnapshot?.client?.name || '';
+        const fallbackName = this.userType === 'admin' ? 'Admin' : 'User';
+        const userName = name || this.authService.currentUser()?.name || this.dashboardDataSnapshot?.client?.name || fallbackName;
         // Split by spaces and get first letter of each word
         const words = userName.trim().split(/\s+/);
 
-        if (words.length === 0) return '';
+        if (words.length === 0 || !words[0]) return 'U';
 
         // Get first letter of first name and last name (or first two words)
         if (words.length === 1) {
@@ -63,7 +64,8 @@ export class HeaderComponent {
         return (firstInitial + lastInitial).toUpperCase();
     }
     getAvatarColor(name?: string): string {
-        const userName = name || this.dashboardDataSnapshot?.client?.name || 'User';
+        const fallbackName = this.userType === 'admin' ? 'Admin' : 'User';
+        const userName = name || this.authService.currentUser()?.name || this.dashboardDataSnapshot?.client?.name || fallbackName;
 
         // Generate a hash from the name
         let hash = 0;
@@ -83,6 +85,7 @@ export class HeaderComponent {
     }
     ngOnInit() {
         this.dashboardData$.subscribe(data => {
+            // this.dashboardDataSnapshot = data.client ? data : null;
             this.dashboardDataSnapshot = data;
         });
     }

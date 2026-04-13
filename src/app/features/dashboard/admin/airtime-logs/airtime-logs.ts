@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { AdminApi } from '../../../../core/services/admin-api';
 import { AlertService } from '../../../../core/services/alert.service';
+import { CommonModule, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-airtime-logs',
-  imports: [],
+  imports: [DatePipe, CommonModule],
   templateUrl: './airtime-logs.html',
   styleUrl: './airtime-logs.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,7 +26,7 @@ export class AirtimeLogs {
     this.isLoading.set(true);
     this.airtimeLogs.getLogs().subscribe({
       next: (logs) => {
-        this.logs.set(logs?.airtimeLogs || []);
+        this.logs.set(logs?.airtime || []);
         this.isLoading.set(false);
       },
       error: (err) => {

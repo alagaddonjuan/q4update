@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AdminStats, ClientsResponse, LogsResponse, ManualTopupRequest, ManualTransaction, PricingTierPrices, PricingTiersResponse, SendAnnouncementRequest, UpdateClientDetails } from '../models/api.model';
+import { AdminStats, ClientsResponseWrapper, Enable2FARequest, LogsResponse, ManualTopupRequest, ManualTransaction, PricingTierPrices, PricingTiersResponse, SendAnnouncementRequest, UpdateClientDetails } from '../models/api.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -17,12 +17,24 @@ export class AdminApi {
     return this.http.get<AdminStats>(`${this.baseUrl}/api/admin/stats`);
   }
 
-  getClients(): Observable<ClientsResponse[]> {
-    return this.http.get<ClientsResponse[]>(`${this.baseUrl}/api/admin/clients`);
+  getClients(): Observable<ClientsResponseWrapper> {
+    return this.http.get<ClientsResponseWrapper>(`${this.baseUrl}/api/admin/clients`);
   }
 
   getLogs(): Observable<LogsResponse> {
     return this.http.get<LogsResponse>(`${this.baseUrl}/api/admin/logs`);
+  }
+
+  getSmsLogs(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/api/client/sms/logs`);
+  }
+
+  getAirtimeLogs(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/api/client/airtime/logs`);
+  }
+
+  getUssdLogs(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/api/client/ussd-logs`);
   }
 
   manualTopup(data: ManualTopupRequest): Observable<any> {
@@ -64,6 +76,10 @@ export class AdminApi {
 
   sendAnnouncement(data: SendAnnouncementRequest) {
     return this.http.post(`${this.baseUrl}/api/admin/announcements`, data);
+  }
+
+  enable2fa(data: Enable2FARequest): Observable<any> {
+    return this.http.post(`${this.baseUrl}api/client/2fa/generate`, data);
   }
 
 }

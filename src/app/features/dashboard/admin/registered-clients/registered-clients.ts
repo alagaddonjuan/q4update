@@ -53,8 +53,8 @@ export class RegisteredClients {
   getClients() {
     this.isLoading.set(true);
     this.clientService.getClients().subscribe({
-      next: (clients) => {
-        this.clients.set(clients || []);
+      next: (response) => {
+        this.clients.set(response.data || []);
         this.isLoading.set(false);
       },
       error: (err) => {
