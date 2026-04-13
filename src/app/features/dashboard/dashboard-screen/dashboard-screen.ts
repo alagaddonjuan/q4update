@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
 import { Router } from '@angular/router';
 import { ClientApiService } from '../../../core/services/client-api';
-import { DashboardData } from '../../../core/models/api.model';
+import { DashboardData, DashboardDataResponse } from '../../../core/models/api.model';
 import { AlertService } from '../../../core/services/alert.service';
 
 Chart.register(...registerables);
@@ -42,7 +42,7 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
 
   // Signals for reactive state management
   readonly loading = signal<boolean>(true);
-  readonly dashboardData = signal<DashboardData | null>(null);
+  readonly dashboardData = signal<DashboardDataResponse | null>(null);
 
   stats: StatCard[] = [
     { icon: '/assets/user/exchange.png', title: 'Utility Bill', value: '0 Token', key: 'utility_bills' },
@@ -69,12 +69,12 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
         console.log('📊 Dashboard data loaded:', data);
         this.dashboardData.set(data);
         this.updateStats(data);
-        this.updateActivities(data);
+        this.updateActivities(data as any);
         this.loading.set(false);
 
         // Create chart after data is loaded
         setTimeout(() => {
-          this.loadChartData();
+          this.createChart(data);
         }, 100);
       },
       error: (err) => {
@@ -85,84 +85,85 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  updateStats(data: DashboardData): void {
-    // Update stats based on API data
-    const stats = data.stats || {};
+  updateStats(data: DashboardDataResponse): void {
+    const client = data.client || {};
+    const stats = data.stats || { totalSmsSent: 0, sms: 0 };
+    const ussdTotal = (data.ussdChartValues || []).reduce((sum, val) => sum + val, 0);
 
     this.stats = [
       {
         icon: '/assets/user/exchange.png',
         title: 'Account Balance',
-        value: `₦${this.formatNumber(stats.balance || 0)}`,
+        value: `₦${this.formatNumber(client.balance || 0)}`,
         key: 'balance'
       },
       {
         icon: '/assets/user/message-icon.png',
         title: 'Total SMS sent',
-        value: `${this.formatNumber(data.sms_logs?.length || 0)} SMS`,
+        value: `${this.formatNumber(stats.totalSmsSent || 0)} SMS`,
         key: 'sms_count'
       },
       {
         icon: '/assets/user/tel-icon.png',
         title: 'Total Airtime send',
-        value: `₦${this.formatNumber(this.calculateAirtimeTotal(data.airtime_logs))}`,
+        value: `₦0`, // Placeholder until airtime logs are added to the response
         key: 'airtime_total'
       },
       {
         icon: '/assets/user/ussd-icon.png',
         title: 'USSD Sessions',
-        value: `${this.formatNumber(data.ussd_logs?.length || 0)} Sessions`,
+        value: `${this.formatNumber(ussdTotal)} Sessions`,
         key: 'ussd_count'
       }
     ];
   }
 
-  updateActivities(data: DashboardData): void {
+  updateActivities(data: any): void {
     // Combine all logs into activities with unique IDs
     const allActivities: Activity[] = [];
     let activityId = 0;
 
     // Add SMS activities
-    if (data.sms_logs && data.sms_logs.length > 0) {
-      data.sms_logs.slice(0, 3).forEach(log => {
-        allActivities.push({
-          id: `sms-${activityId++}`,
-          user: log.recipient || 'Unknown',
-          avatar: this.getInitials(log.recipient || 'U'),
-          action: 'SMS sent',
-          type: 'SMS',
-          time: this.formatTime(log.created_at)
-        });
-      });
-    }
+    // if (data.sms_logs && data.sms_logs.length > 0) {
+    //   data.sms_logs.slice(0, 3).forEach(log => {
+    //     allActivities.push({
+    //       id: `sms-${activityId++}`,
+    //       user: log.recipient || 'Unknown',
+    //       avatar: this.getInitials(log.recipient || 'U'),
+    //       action: 'SMS sent',
+    //       type: 'SMS',
+    //       time: this.formatTime(log.created_at)
+    //     });
+    //   });
+    // }
 
     // Add Airtime activities
-    if (data.airtime_logs && data.airtime_logs.length > 0) {
-      data.airtime_logs.slice(0, 3).forEach(log => {
-        allActivities.push({
-          id: `airtime-${activityId++}`,
-          user: log.phone_number || 'Unknown',
-          avatar: this.getInitials(log.phone_number || 'U'),
-          action: 'Airtime recharge',
-          type: 'Airtime',
-          time: this.formatTime(log.created_at)
-        });
-      });
-    }
+    // if (data.airtime_logs && data.airtime_logs.length > 0) {
+    //   data.airtime_logs.slice(0, 3).forEach(log => {
+    //     allActivities.push({
+    //       id: `airtime-${activityId++}`,
+    //       user: log.phone_number || 'Unknown',
+    //       avatar: this.getInitials(log.phone_number || 'U'),
+    //       action: 'Airtime recharge',
+    //       type: 'Airtime',
+    //       time: this.formatTime(log.created_at)
+    //     });
+    //   });
+    // }
 
     // Add USSD activities
-    if (data.ussd_logs && data.ussd_logs.length > 0) {
-      data.ussd_logs.slice(0, 3).forEach(log => {
-        allActivities.push({
-          id: `ussd-${activityId++}`,
-          user: log.phone_number || 'Unknown',
-          avatar: this.getInitials(log.phone_number || 'U'),
-          action: 'USSD session',
-          type: 'USSD',
-          time: this.formatTime(log.created_at)
-        });
-      });
-    }
+    // if (data.ussd_logs && data.ussd_logs.length > 0) {
+    //   data.ussd_logs.slice(0, 3).forEach(log => {
+    //     allActivities.push({
+    //       id: `ussd-${activityId++}`,
+    //       user: log.phone_number || 'Unknown',
+    //       avatar: this.getInitials(log.phone_number || 'U'),
+    //       action: 'USSD session',
+    //       type: 'USSD',
+    //       time: this.formatTime(log.created_at)
+    //     });
+    //   });
+    // }
 
     // Sort by time (most recent first) and take top 7
     this.activities = allActivities
@@ -180,21 +181,7 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  loadChartData(): void {
-    this.clientApi.getChartData().subscribe({
-      next: (chartData) => {
-        console.log('📈 Chart data loaded:', chartData);
-        this.createChart(chartData);
-      },
-      error: (err) => {
-        console.error('❌ Error loading chart data:', err);
-        // Create chart with default data
-        this.createChart(null);
-      }
-    });
-  }
-
-  createChart(data: any): void {
+  createChart(data: DashboardDataResponse | null): void {
     if (!this.chartCanvas) {
       return;
     }
@@ -202,28 +189,50 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
 
     if (ctx) {
+      // Destroy existing chart to prevent canvas overlapping
+      if (this.chart) {
+        this.chart.destroy();
+      }
+
       // Use API data or fallback to default
-      const chartLabels = data?.labels || ['TOKEN', 'SMS', 'AIRTIME', 'USSD'];
-      const chartValues = data?.values || [0, 0, 0, 0];
+      const chartLabels = data?.chartLabels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const ussdValues = data?.ussdChartValues || [0, 0, 0, 0, 0, 0, 0];
+      const smsValues = data?.smsChartValues || [0, 0, 0, 0, 0, 0, 0];
 
       this.chart = new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
           labels: chartLabels,
-          datasets: [{
-            label: 'Usage',
-            data: chartValues,
-            backgroundColor: '#14b8a6',
-            borderRadius: 8,
-            barThickness: 60
-          }]
+          datasets: [
+            {
+              label: 'USSD Sessions',
+              data: ussdValues,
+              borderColor: '#14b8a6',
+              backgroundColor: 'rgba(20, 184, 166, 0.1)',
+              fill: true,
+              tension: 0.4,
+              pointRadius: 4,
+              pointBackgroundColor: '#14b8a6'
+            },
+            {
+              label: 'SMS Sent',
+              data: smsValues,
+              borderColor: '#3b82f6',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              fill: true,
+              tension: 0.4,
+              pointRadius: 4,
+              pointBackgroundColor: '#3b82f6'
+            }
+          ]
         },
         options: {
           responsive: true,
-          maintainAspectRatio: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
-              display: false
+              display: true,
+              position: 'top'
             },
             tooltip: {
               backgroundColor: '#1f2937',
@@ -237,9 +246,6 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
           scales: {
             y: {
               beginAtZero: true,
-              ticks: {
-                stepSize: 500
-              },
               grid: {
                 color: '#f3f4f6'
               }

@@ -161,12 +161,12 @@ export class AdminDashboard {
       this.alertService.warning('Please provide a valid tier name.');
       return;
     }
-    // const tierName = this.tier_Name.value.trim();
     const tier = { tier_name: (this.createTierForm.value.tier_name || '').trim() };
 
     this.adminApi.createPricingTier(tier).subscribe({
-      next: (response) => {
-        this.alertService.success(`Pricing tier "${this.createTierForm.value}" created successfully`);
+      next: (res: any) => {
+        this.alertService.success(res?.message || 'Pricing tier created successfully');
+
         this.createTierForm.reset();
         this.getPricingTiers();
       },

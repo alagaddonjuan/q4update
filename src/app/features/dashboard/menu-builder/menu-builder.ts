@@ -1,8 +1,9 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ClientApiService } from '../../../core/services/client-api';
 import { AlertService } from '../../../core/services/alert.service';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 
 interface UssdMenu {
   id: number;
@@ -18,22 +19,32 @@ interface UssdMenu {
 @Component({
   selector: 'app-menu-builder',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './menu-builder.html',
   styleUrl: './menu-builder.css',
 })
 export class MenuBuilder implements OnInit {
   private readonly router = inject(Router);
+  private readonly fb = inject(FormBuilder); //
+
   private readonly clientApi = inject(ClientApiService);
   alertService = inject(AlertService);
 
   // Signals for reactive state management
   private readonly menusSignal = signal<UssdMenu[]>([]);
   readonly isLoading = signal<boolean>(true);
-  // readonly error = signal<string | null>(null);
-  readonly success = signal<string | null>(null);
-  readonly activeMenuId = signal<number | null>(null);
-  readonly isTogglingStatus = signal<{ [key: number]: boolean }>({});
+  readonly activeMenuId = computed(() => this.menusSignal().find(m => m.isActive)?.id ?? null);
+  readonly isTogglingStatus = signal<{ [key: number]: boolean }>({}); //
+
+  // Modal state for creating new menu
+  readonly showCreateMenuModal = signal<boolean>(false);
+  createMenuForm: FormGroup = this.fb.group({
+    menu_name: ['', Validators.required],
+    ussd_code: [''],
+  });
+
+  constructor() {
+  }
 
   // Expose menus as readonly getter
   get menus(): UssdMenu[] {
@@ -62,12 +73,6 @@ export class MenuBuilder implements OnInit {
           createdAt: menu.created_at || menu.createdAt,
           updatedAt: menu.updated_at || menu.updatedAt
         }));
-
-        // Find active menu
-        const activeMenu = transformedMenus.find(m => m.isActive);
-        if (activeMenu) {
-          this.activeMenuId.set(activeMenu.id);
-        }
 
         this.menusSignal.set(transformedMenus);
         this.isLoading.set(false);
@@ -99,7 +104,6 @@ export class MenuBuilder implements OnInit {
               createdAt: new Date().toISOString()
             }
           ]);
-          this.activeMenuId.set(1);
         } else if (err.status === 0) {
           this.alertService.error('Cannot connect to server. Please check if the API is running.');
         } else {
@@ -120,89 +124,89 @@ export class MenuBuilder implements OnInit {
   toggleMenuStatus(menu: UssdMenu): void {
     const menuId = menu.id;
     const newStatus: 'Active' | 'Inactive' = menu.status === 'Active' ? 'Inactive' : 'Active';
+    const isActivePayload = newStatus === 'Active';
 
     // Set loading state for this specific menu
     this.isTogglingStatus.update(state => ({ ...state, [menuId]: true }));
 
-    // If activating a menu, use setActiveMenu API
-    if (newStatus === 'Active') {
-      this.clientApi.setActiveMenu(menuId).subscribe({
-        next: (response) => {
+    const updateStateLocally = () => {
+      this.menusSignal.update(menus =>
+        menus.map(m => {
+          if (m.id === menuId) {
+            return { ...m, status: newStatus, isActive: newStatus === 'Active' };
+          }
+          if (newStatus === 'Active') {
+            return { ...m, status: 'Inactive', isActive: false };
+          }
+          return m;
+        })
+      );
+      this.alertService.success(`Menu "${menu.name}" is now ${newStatus}`);
+      this.isTogglingStatus.update(state => ({ ...state, [menuId]: false }));
+    };
 
-          // Update all menus: deactivate others, activate this one
-          this.menusSignal.update(menus =>
-            menus.map(m => ({
-              ...m,
-              status: m.id === menuId ? 'Active' : 'Inactive',
-              isActive: m.id === menuId
-            }))
-          );
+    this.clientApi.setActiveMenu(menuId, isActivePayload).subscribe({
+      next: () => {
+        updateStateLocally();
+      },
+      error: (err) => {
+        console.error(`❌ Error changing menu status to ${newStatus}:`, err);
 
-          this.activeMenuId.set(menuId);
-          this.success.set(`Menu "${menu.name}" is now Active`);
+        if (err.status === 404) {
+          updateStateLocally();
+        } else {
           this.isTogglingStatus.update(state => ({ ...state, [menuId]: false }));
-
-          // Clear success message after 3 seconds
-          setTimeout(() => this.success.set(null), 3000);
-        },
-        error: (err) => {
-          console.error('❌ Error activating menu:', err);
-          this.isTogglingStatus.update(state => ({ ...state, [menuId]: false }));
-
-          if (err.status === 404) {
-            this.handleLocalToggle(menu, newStatus);
-          } else if (err.status === 400) {
+          if (err.status === 400) {
             this.alertService.error(err.error?.message || 'Invalid menu ID.');
           } else if (err.status === 403) {
-            this.alertService.error('You do not have permission to activate menus.');
+            this.alertService.error('You do not have permission to modify menus.');
           } else {
-            this.alertService.error(`Failed to activate menu "${menu.name}". Please try again.`);
+            this.alertService.error(`Failed to update menu "${menu.name}". Please try again.`);
           }
-
-          setTimeout(() => 5000);
         }
-      });
-    } else {
-      // Deactivating - just update locally (API usually doesn't have deactivate endpoint)
-      this.handleLocalToggle(menu, newStatus);
-    }
+      }
+    });
   }
 
-  private handleLocalToggle(menu: UssdMenu, newStatus: 'Active' | 'Inactive'): void {
-    const menuId = menu.id;
-
-    // Update menu status locally
-    this.menusSignal.update(menus =>
-      menus.map(m => {
-        if (m.id === menuId) {
-          return { ...m, status: newStatus, isActive: newStatus === 'Active' };
-        }
-        // If activating this menu, deactivate others
-        if (newStatus === 'Active') {
-          return { ...m, status: 'Inactive', isActive: false };
-        }
-        return m;
-      })
-    );
-
-    if (newStatus === 'Active') {
-      this.activeMenuId.set(menuId);
-    }
-
-    this.success.set(`Menu "${menu.name}" is now ${newStatus}`);
-    this.isTogglingStatus.update(state => ({ ...state, [menuId]: false }));
-
-    setTimeout(() => this.success.set(null), 3000);
+  openCreateMenuModal(): void {
+    this.showCreateMenuModal.set(true);
+    this.createMenuForm.reset(); // Clear form when opening
   }
 
+  closeCreateMenuModal(): void {
+    this.showCreateMenuModal.set(false);
+  }
+
+  createMenu(): void {
+    if (this.createMenuForm.invalid) {
+      this.createMenuForm.markAllAsTouched();
+      this.alertService.warning('Please fill in all required fields correctly.');
+      return;
+    }
+
+    const { menu_name, ussd_code } = this.createMenuForm.value;
+
+    if (!menu_name) {
+      this.alertService.error('Menu name is required.');
+      return;
+    }
+
+    this.clientApi.createUssdMenu({ menu_name, ussd_code }).subscribe({
+      next: (response) => {
+        this.alertService.success(`Menu "${menu_name}" created successfully!`);
+        this.closeCreateMenuModal();
+        this.loadMenus(); // Reload the list of menus to include the new one
+      },
+      error: (err) => {
+        console.error('❌ Error creating new menu:', err);
+        this.alertService.error(err.error?.message || 'Failed to create menu. Please try again.');
+      }
+    });
+  }
+
+  // This method is no longer needed as openCreateMenuModal() is called directly from the button
   createNewMenu(): void {
-    console.log('➕ Creating new menu');
-    // TODO: Implement create new menu functionality
-    // Option 1: Navigate to create page
-    // this.router.navigate(['/user/menus/create']);
-
-    // Option 2: Open modal/dialog
-    this.alertService.warning('Create new menu feature coming soon!');
+    this.openCreateMenuModal();
   }
 
   deleteMenu(menu: UssdMenu, event: Event): void {
@@ -220,8 +224,6 @@ export class MenuBuilder implements OnInit {
     // For now, remove locally
     this.menusSignal.update(menus => menus.filter(m => m.id !== menu.id));
     this.alertService.success(`Menu "${menu.name}" has been deleted`);
-
-    setTimeout(() => this.success.set(null), 3000);
   }
 
   duplicateMenu(menu: UssdMenu, event: Event): void {
@@ -240,9 +242,7 @@ export class MenuBuilder implements OnInit {
     };
 
     this.menusSignal.update(menus => [...menus, newMenu]);
-    this.success.set(`Menu "${menu.name}" has been duplicated`);
-
-    setTimeout(() => this.success.set(null), 3000);
+    this.alertService.success(`Menu "${menu.name}" has been duplicated`);
   }
 
   refreshMenus(): void {

@@ -6,7 +6,7 @@
       <div class="flex items-center justify-between">
         <div>
           <p class="text-sm text-gray-600 uppercase mb-1">Total Clients</p>
-          <p class="text-3xl font-bold text-gray-800">{{ adminStats()?.clientCount ?? 0 }}</p>
+          <p class="text-3xl font-bold text-gray-800">{{ adminStats()?.stats?.users ?? 0 }}</p>
         </div>
         <div class="text-gray-300">
           <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
@@ -24,7 +24,7 @@
         <div>
           <p class="text-sm text-gray-600 uppercase mb-1">Total Tokens Purchased</p>
           <p class="text-3xl font-bold text-gray-800">
-            {{ adminStats()?.tokensPurchased ?? 0 }}
+            {{ adminStats()?.stats?.tokensPurchased ?? 0 }}
           </p>
         </div>
         <div class="text-gray-300">
@@ -47,7 +47,7 @@
       <div class="flex items-center justify-between">
         <div>
           <p class="text-sm text-gray-600 uppercase mb-1">Total SMS Sent</p>
-          <p class="text-3xl font-bold text-gray-800">{{ adminStats()?.smsSentCount ?? 0 }}</p>
+          <p class="text-3xl font-bold text-gray-800">{{ adminStats()?.stats?.sms ?? 0 }}</p>
         </div>
         <div class="text-gray-300">
           <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">

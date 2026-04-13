@@ -1,10 +1,11 @@
+import { DatePipe } from '@angular/common';
 import { AlertService } from '../../../../core/services/alert.service';
 import { AdminApi } from './../../../../core/services/admin-api';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 
 @Component({
   selector: 'app-sms-logs',
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './sms-logs.html',
   styleUrl: './sms-logs.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,7 +28,7 @@ export class SmsLogs {
     this.isLoading.set(true);
     this.smsLogs.getLogs().subscribe({
       next: (logs) => {
-        this.logs.set(logs?.smsLogs || []);
+        this.logs.set(logs?.sms || []);
         this.isLoading.set(false);
       },
       error: (err) => {

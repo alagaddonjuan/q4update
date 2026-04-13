@@ -22,14 +22,16 @@
             class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-gray-200"
           >
             <div class="flex items-center gap-4">
-              <div 
-                  class="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold"
-                  [ngClass]="getAvatarColor()"
-                >
-                  {{ getInitials() }}
+              <div
+                class="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold"
+                [ngClass]="getAvatarColor()"
+              >
+                {{ getInitials() }}
               </div>
               <div>
-                <h2 class="text-lg sm:text-xl font-semibold text-gray-800"> {{ profileForm.get('fullName')?.value || 'N/A' }}</h2>
+                <h2 class="text-lg sm:text-xl font-semibold text-gray-800">
+                  {{ profileForm.get('fullName')?.value || 'N/A' }}
+                </h2>
                 <p class="text-sm text-gray-500">{{ profileForm.get('email')?.value || 'N/A' }}</p>
               </div>
             </div>
@@ -56,7 +58,7 @@
                 "
               />
               @if (profileForm.get('fullName')?.invalid && profileForm.get('fullName')?.touched) {
-              <p class="text-red-500 text-xs mt-1">Full name is required</p>
+                <p class="text-red-500 text-xs mt-1">Full name is required</p>
               }
             </div>
 
@@ -73,7 +75,7 @@
                 "
               />
               @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
-              <p class="text-red-500 text-xs mt-1">Valid email is required</p>
+                <p class="text-red-500 text-xs mt-1">Valid email is required</p>
               }
             </div>
 
@@ -130,26 +132,28 @@
                 </thead>
                 <tbody>
                   @for (key of apiKeys; track key.key; let i = $index) {
-                  <tr class="border-b border-gray-100">
-                    <td class="py-3 px-2 sm:px-4 text-sm text-gray-800">{{ key.name }}</td>
-                    <td class="py-3 px-2 sm:px-4 text-sm text-gray-600 font-mono">{{ key.key }}</td>
-                    <td class="py-3 px-2 sm:px-4 text-sm text-gray-600">{{ key.created }}</td>
-                    <td class="py-3 px-2 sm:px-4">
-                      <button
-                        type="button"
-                        (click)="deleteApiKey(i)"
-                        class="text-red-600 hover:text-red-800 text-sm font-medium"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
+                    <tr class="border-b border-gray-100">
+                      <td class="py-3 px-2 sm:px-4 text-sm text-gray-800">{{ key.name }}</td>
+                      <td class="py-3 px-2 sm:px-4 text-sm text-gray-600 font-mono">
+                        {{ key.key }}
+                      </td>
+                      <td class="py-3 px-2 sm:px-4 text-sm text-gray-600">{{ key.created }}</td>
+                      <td class="py-3 px-2 sm:px-4">
+                        <button
+                          type="button"
+                          (click)="deleteApiKey(i)"
+                          class="text-red-600 hover:text-red-800 text-sm font-medium"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
                   } @empty {
-                  <tr>
-                    <td colspan="4" class="py-6 px-4 text-center text-gray-500 text-sm">
-                      No API keys created yet
-                    </td>
-                  </tr>
+                    <tr>
+                      <td colspan="4" class="py-6 px-4 text-center text-gray-500 text-sm">
+                        No API keys created yet
+                      </td>
+                    </tr>
                   }
                 </tbody>
               </table>
@@ -179,19 +183,169 @@
             <h3 class="text-lg font-semibold text-teal-600 mb-2">
               Two Factor Authentication (2FA)
             </h3>
-            <p class="text-sm text-gray-600 mb-4">
-              Add an extra layer of security to your account by enabling 2FA
-            </p>
-            <button
-              type="button"
-              (click)="enable2FA()"
-              class="bg-teal-700 text-white px-6 py-3 rounded-lg hover:bg-teal-800 transition font-medium"
-            >
-              Enable 2FA
-            </button>
+            @if (is2FAEnabled()) {
+              <div class="flex items-center gap-2 text-green-600 font-medium mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                Two-factor authentication is active
+              </div>
+              <p class="text-sm text-gray-600 mb-4">
+                Your account is protected with an extra layer of security.
+              </p>
+              @if (isAdmin()) {
+                <button
+                  type="button"
+                  (click)="disable2FA()"
+                  class="text-red-600 hover:text-red-700 text-sm font-medium flex items-center gap-1"
+                >
+                  Disable 2FA
+                </button>
+              }
+            } @else {
+              <p class="text-sm text-gray-600 mb-4">
+                Add an extra layer of security to your account by enabling 2FA
+              </p>
+              <button
+                type="button"
+                (click)="enable2FA()"
+                [disabled]="isInitializing2FA()"
+                class="bg-teal-700 text-white px-6 py-3 rounded-lg hover:bg-teal-800 transition font-medium disabled:opacity-50"
+              >
+                @if (isInitializing2FA()) {
+                  Initializing...
+                } @else {
+                  Enable 2FA
+                }
+              </button>
+            }
           </div>
         </form>
       </div>
     </div>
   </main>
+
+  <!-- 2FA Setup Modal Overlay -->
+  @if (show2FASetup()) {
+    <div class="fixed inset-0 z-60 flex items-center justify-center p-4">
+      <!-- Backdrop -->
+      <div
+        class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+        (click)="show2FASetup.set(false)"
+      ></div>
+
+      <!-- Modal Content -->
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+        <div class="bg-teal-700 p-6 text-white">
+          <h3 class="text-xl font-bold">Setup Two-Factor Authentication</h3>
+          <p class="text-teal-100 text-sm mt-1">Scan the QR code to continue</p>
+        </div>
+
+        <div class="p-6 space-y-6">
+          <div class="text-center">
+            <div class="inline-block p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <img [src]="qrCodeData()?.qrCode" alt="QR Code" class="w-48 h-48 mx-auto" />
+            </div>
+
+            <div class="mt-4">
+              <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">
+                Manual Entry Code
+              </p>
+              <code class="px-3 py-1 bg-gray-100 rounded text-teal-700 font-mono text-sm break-all">
+                {{ qrCodeData()?.secret }}
+              </code>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <label class="block text-sm font-semibold text-gray-700">Enter verification code</label>
+            <input
+              type="text"
+              [(ngModel)]="twoFactorPin"
+              placeholder="000000"
+              maxlength="6"
+              class="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-xl text-center text-3xl font-bold tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
+            />
+          </div>
+
+          <div class="flex gap-3 pt-2">
+            <button
+              type="button"
+              (click)="show2FASetup.set(false)"
+              class="flex-1 px-4 py-3 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              (click)="confirm2FASetup()"
+              [disabled]="isVerifying2FA() || twoFactorPin.length !== 6"
+              class="flex-1 bg-teal-700 text-white px-4 py-3 rounded-xl font-bold hover:bg-teal-800 transition disabled:opacity-50"
+            >
+              {{ isVerifying2FA() ? 'Verifying...' : 'Enable 2FA' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- 2FA Disable Modal Overlay -->
+  @if (show2FADisable()) {
+    <div class="fixed inset-0 z-60 flex items-center justify-center p-4">
+      <!-- Backdrop -->
+      <div
+        class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+        (click)="show2FADisable.set(false)"
+      ></div>
+
+      <!-- Modal Content -->
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+        <div class="bg-red-600 p-6 text-white">
+          <h3 class="text-xl font-bold">Disable Two-Factor Authentication</h3>
+          <p class="text-red-100 text-sm mt-1">Enter your verification code to turn off 2FA</p>
+        </div>
+
+        <div class="p-6 space-y-6">
+          <div class="space-y-3">
+            <label class="block text-sm font-semibold text-gray-700">Verification code</label>
+            <input
+              type="text"
+              [(ngModel)]="twoFactorPin"
+              placeholder="000000"
+              maxlength="6"
+              class="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-xl text-center text-3xl font-bold tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white transition"
+            />
+          </div>
+
+          <div class="flex gap-3 pt-2">
+            <button
+              type="button"
+              (click)="show2FADisable.set(false)"
+              class="flex-1 px-4 py-3 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              (click)="confirm2FADisable()"
+              [disabled]="isVerifying2FA() || twoFactorPin.length !== 6"
+              class="flex-1 bg-red-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-red-700 transition disabled:opacity-50"
+            >
+              {{ isVerifying2FA() ? 'Processing...' : 'Disable 2FA' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </div>

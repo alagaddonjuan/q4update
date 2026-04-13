@@ -26,13 +26,13 @@ export class TransactionLogs {
 
   getLogs() {
     this.isLoading.set(true);
-    this.logService.getLogs().subscribe({
+    this.logService.getStats().subscribe({
       next: (logs) => {
         console.log('Transaction Logs:', logs);
         // The API returns a single LogsResponse object which contains the transactions array.
         // We also check if logs and logs.transactions exist to be safe.
         // this.transactions = logs?.transactions || [];
-        this.transactions.set(logs?.transactions || []);
+        this.transactions.set(logs?.recentTransactions || []);
         this.isLoading.set(false);
       },
       error: (err) => {

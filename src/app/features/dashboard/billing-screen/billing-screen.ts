@@ -46,33 +46,21 @@ export class BillingScreen implements OnInit {
   private loadTransactions(): void {
     this.isLoading.set(true);
 
-    this.apiService.getDashboard().subscribe({
+    this.apiService.getTransactionHistory().subscribe({
       next: (data) => {
-        // Map API transactions to your Transaction interface
-        const transactionsData = data?.transactions || [];
-        const mappedTransactions: Transaction[] = transactionsData.map((tx: any) => ({
-          date: new Date(tx.created_at).toLocaleString('en-US', {
-            month: 'numeric',
-            day: 'numeric',
-            year: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: true
-          }),
-          reference: tx.reference || tx.id,
-          amount: `₦${parseFloat(tx.amount).toFixed(2)}`,
-          tokens: tx.tokens || tx.amount, // Adjust based on your API response
-          status: tx.status || 'Pending'
+        const transformedTransactions = data.map((tx: any) => ({
+          date: new Date(tx.created_at).toLocaleDateString(),
+          reference: tx.reference || 'N/A',
+          amount: `₦${tx.amount}`,
+          tokens: tx.tokens || 0,
+          status: tx.status || 'Unknown'
         }));
-
-        this.transactions.set(mappedTransactions);
+        this.transactions.set(transformedTransactions);
         this.isLoading.set(false);
       },
       error: (err) => {
         console.error('Error loading transactions:', err);
-        this.alertService.error('Failed to load transactions. Please try again later.');
-        this.transactions.set([]);
+        this.alertService.error('Failed to load transaction history');
         this.isLoading.set(false);
       }
     });

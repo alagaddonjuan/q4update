@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { AdminApi } from '../../../../core/services/admin-api';
-import { UssdLog } from '../../../../core/models/api.model';
 import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
@@ -17,7 +16,7 @@ export class UssdLogs {
   ussdLogs = inject(AdminApi);
   alertService = inject(AlertService);
 
-  logs = signal<UssdLog[]>([]);
+  logs = signal<any[]>([]);
   isLoading = signal(false);
 
   ngOnInit() {
@@ -28,7 +27,7 @@ export class UssdLogs {
     this.isLoading.set(true);
     this.ussdLogs.getLogs().subscribe({
       next: (logs) => {
-        this.logs.set(logs?.ussdLogs || []);
+        this.logs.set(logs?.ussd || []);
         this.isLoading.set(false);
       },
       error: (err) => {

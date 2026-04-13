@@ -48,22 +48,22 @@ export class UssdScreen implements OnInit {
     this.clientApi.getDashboard().subscribe({
       next: (data) => {
 
-        if (data.ussd_logs && data.ussd_logs.length > 0) {
-          const transformedLogs = data.ussd_logs.map((log, index) => ({
-            id: log.id || `ussd-${index}`,
-            date: this.formatDate(log.created_at || log.timestamp),
-            phoneNumber: log.phone_number || log.phoneNumber || 'Unknown',
-            sessionId: log.session_id || log.sessionId || '-',
-            finalInput: log.final_input || log.userInput || '-',
-            status: this.normalizeStatus(log.status),
-            cost: this.formatCost(log.cost || log.charge || 0)
-          }));
+        // if (data.ussd_logs && data.ussd_logs.length > 0) {
+        //   const transformedLogs = data.ussd_logs.map((log, index) => ({
+        //     id: log.id || `ussd-${index}`,
+        //     date: this.formatDate(log.created_at || log.timestamp),
+        //     phoneNumber: log.phone_number || log.phoneNumber || 'Unknown',
+        //     sessionId: log.session_id || log.sessionId || '-',
+        //     finalInput: log.final_input || log.userInput || '-',
+        //     status: this.normalizeStatus(log.status),
+        //     cost: this.formatCost(log.cost || log.charge || 0)
+        //   }));
 
-          this.ussdLogsSignal.set(transformedLogs);
-          this.calculateStatistics(transformedLogs);
-        } else {
-          this.ussdLogsSignal.set([]);
-        }
+        //   this.ussdLogsSignal.set(transformedLogs);
+        //   this.calculateStatistics(transformedLogs);
+        // } else {
+        //   this.ussdLogsSignal.set([]);
+        // }
 
         // Set USSD code from client data if available
         if (data.client?.ussd_code) {

@@ -2,7 +2,21 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { DashboardData, SendSmsRequest, SendAirtimeRequest, TeamInviteRequest, MenuItemRequest, PaymentInitRequest, ApiKeyRequest } from '../models/api.model';
+import {
+  DashboardData,
+  SendSmsRequest,
+  SendAirtimeRequest,
+  TeamInviteRequest,
+  MenuItemRequest,
+  PaymentInitRequest,
+  ApiKeyRequest,
+  RolesResponse,
+  TeamMemberResponse,
+  DashboardDataResponse,
+  Generate2FAResponse,
+  Activate2FARequest,
+  Disable2FARequest
+} from '../models/api.model';
 
 
 @Injectable({
@@ -13,8 +27,8 @@ export class ClientApiService {
   private readonly http = inject(HttpClient);
 
   // Dashboard & Core
-  getDashboard(): Observable<DashboardData> {
-    return this.http.get<DashboardData>(`${this.baseUrl}/api/dashboard`);
+  getDashboard(): Observable<DashboardDataResponse> {
+    return this.http.get<DashboardDataResponse>(`${this.baseUrl}/api/client/dashboard`);
   }
 
   getChartData(): Observable<any> {
@@ -75,39 +89,60 @@ export class ClientApiService {
 
   // USSD Menu Builder
   getUssdMenus(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/api/ussd/menus`);
+    return this.http.get<any[]>(`${this.baseUrl}/api/client/ussd/menus`);
   }
 
-  setActiveMenu(menuId: number): Observable<any> {
-    return this.http.post(`${this.baseUrl}/api/ussd/menus/set-active`, { menuId });
+  createUssdMenu(data: { menu_name: string; ussd_code: string }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/client/ussd-menus`, data);
+  }
+
+  setActiveMenu(menuId: number, isActive: boolean): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/client/ussd/menus/set-active`, { menuId, isActive });
   }
 
   getMenuDetails(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/api/ussd/menus/${id}`);
+    return this.http.get(`${this.baseUrl}/api/client/ussd/menus/${id}`);
   }
 
   addMenuItem(menuId: number, data: MenuItemRequest): Observable<any> {
-    return this.http.post(`${this.baseUrl}/api/ussd/menus/${menuId}/items`, data);
+    return this.http.post(`${this.baseUrl}/api/client/ussd/menus/${menuId}/items`, data);
   }
 
   updateMenuItem(itemId: number, data: Partial<MenuItemRequest>): Observable<any> {
-    return this.http.put(`${this.baseUrl}/api/ussd/menus/items/${itemId}`, data);
+    return this.http.put(`${this.baseUrl}/api/client/ussd/menus/items/${itemId}`, data);
   }
 
   deleteMenuItem(itemId: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/api/ussd/menus/items/${itemId}`);
+    return this.http.delete(`${this.baseUrl}/api/client/ussd/menus/items/${itemId}`);
   }
 
   // Team Management
-  getRoles(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/api/team/roles`);
+  getRoles(): Observable<RolesResponse[]> {
+    return this.http.get<RolesResponse[]>(`${this.baseUrl}/api/client/team/roles`);
   }
 
-  getTeamMembers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/api/team/members`);
+  getTeamMembers(): Observable<TeamMemberResponse[]> {
+    return this.http.get<TeamMemberResponse[]>(`${this.baseUrl}/api/client/team/members`);
   }
 
   inviteTeamMember(data: TeamInviteRequest): Observable<any> {
     return this.http.post(`${this.baseUrl}/api/team/invite`, data);
+  }
+
+  getTransactionHistory(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/api/client/billing/history`);
+  }
+
+  // Two-Factor Authentication
+  generate2FA(): Observable<Generate2FAResponse> {
+    return this.http.post<Generate2FAResponse>(`${this.baseUrl}/api/client/2fa/generate`, {});
+  }
+
+  activate2FA(data: Activate2FARequest): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/client/2fa/enable`, data);
+  }
+
+  disable2FA(token: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/client/2fa/disable`, { token });
   }
 }

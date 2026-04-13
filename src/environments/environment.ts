@@ -5,5 +5,5 @@ export interface Environment {
 
 export const environment: Environment = {
   production: true,
-  apiUrl: 'https://coms.q4globalltd.com'
+  apiUrl: 'https://coms.q4iltd.com'
 };

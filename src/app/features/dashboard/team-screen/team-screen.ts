@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ClientApiService } from '../../../core/services/client-api';
@@ -38,20 +38,30 @@ export class TeamScreen implements OnInit {
   inviteForm: FormGroup;
 
   // Signals for reactive state management
-  private readonly teamMembersSignal = signal<TeamMember[]>([]);
-  private readonly rolesSignal = signal<Role[]>([]);
+  readonly rawMembers = signal<any[]>([]);
+  readonly roles = signal<Role[]>([]);
   readonly isLoading = signal<boolean>(true);
   readonly isLoadingRoles = signal<boolean>(true);
-  readonly isSendingInvite = signal<boolean>(false);
 
-  // Expose as getters
-  get teamMembers(): TeamMember[] {
-    return this.teamMembersSignal();
-  }
+  // Computed state combines raw members and roles automatically, preventing race conditions
+  readonly teamMembers = computed<TeamMember[]>(() => {
+    const currentRoles = this.roles();
+    return this.rawMembers().map((member, index) => {
+      const roleId = member.role_id;
+      const matchedRole = currentRoles.find(r => Number(r.id) === Number(roleId));
 
-  get roles(): Role[] {
-    return this.rolesSignal();
-  }
+      return {
+        id: member.id || `member-${index}`,
+        name: member.name || this.extractNameFromEmail(member.email),
+        email: member.email,
+        role: roleId?.toString() || 'N/A',
+        roleName: matchedRole?.name || member.role_name || 'Unknown',
+        status: this.normalizeStatus(member.status),
+        invitedAt: member.invited_at || member.createdAt,
+        acceptedAt: member.accepted_at || member.joinedAt
+      };
+    });
+  });
 
   constructor() {
     this.inviteForm = this.fb.group({
@@ -65,8 +75,6 @@ export class TeamScreen implements OnInit {
     this.loadTeamMembers();
   }
 
-  // Inside src/app/team-screen/team-screen.component.ts
-
   loadRoles(): void {
     this.isLoadingRoles.set(true);
 
@@ -75,11 +83,11 @@ export class TeamScreen implements OnInit {
 
         const transformedRoles = roles.map(role => ({
           id: role.id,
-          name: role.role_name, // Map role_name -> name
+          name: role.name || role.role_name || 'Unknown Role', // Support API returning `name`
           description: role.description || '' // Ensure description is available if needed
         }));
 
-        this.rolesSignal.set(transformedRoles);
+        this.roles.set(transformedRoles);
         this.isLoadingRoles.set(false);
       },
       error: (err) => {
@@ -87,7 +95,7 @@ export class TeamScreen implements OnInit {
         this.isLoadingRoles.set(false);
 
         // Fallback roles are correctly defined using 'name' key, so they are safe:
-        this.rolesSignal.set([
+        this.roles.set([
           { id: 1, name: 'Admin', description: 'Full access to all features' },
           { id: 2, name: 'Developer', description: 'Access to API and development tools' },
           { id: 3, name: 'Manager', description: 'Manage team and services' },
@@ -102,19 +110,7 @@ export class TeamScreen implements OnInit {
 
     this.clientApi.getTeamMembers().subscribe({
       next: (members) => {
-
-        const transformedMembers = members.map((member, index) => ({
-          id: member.id || `member-${index}`,
-          name: member.name || this.extractNameFromEmail(member.email),
-          email: member.email,
-          role: member.role || member.role_id?.toString() || 'N/A',
-          roleName: member.role_name || this.getRoleName(member.role_id),
-          status: this.normalizeStatus(member.status),
-          invitedAt: member.invited_at || member.createdAt,
-          acceptedAt: member.accepted_at || member.joinedAt
-        }));
-
-        this.teamMembersSignal.set(transformedMembers);
+        this.rawMembers.set(members);
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -127,8 +123,6 @@ export class TeamScreen implements OnInit {
 
   sendInvitation(): void {
     if (this.inviteForm.valid) {
-      this.isSendingInvite.set(true);
-
       const formValue = this.inviteForm.value;
 
       const inviteData: TeamInviteRequest = {
@@ -138,31 +132,28 @@ export class TeamScreen implements OnInit {
 
       this.clientApi.inviteTeamMember(inviteData).subscribe({
         next: (response) => {
-          this.isSendingInvite.set(false);
+          const selectedRole = this.roles().find(r => r.id === inviteData.role_id);
+          const roleName = selectedRole?.name || 'Unknown';
 
-          const roleName = this.getRoleName(inviteData.role_id);
           this.alertService.success(`Invitation sent to ${formValue.email} as ${roleName}!`);
 
-          // Add new member to the list (optimistic update)
-          const newMember: TeamMember = {
+          // Add raw new member to the list (optimistic update maps cleanly via computed)
+          const newRawMember = {
             id: response.id || `member-${Date.now()}`,
             name: this.extractNameFromEmail(formValue.email),
             email: formValue.email,
-            role: formValue.role,
-            roleName: roleName,
+            role_id: inviteData.role_id,
             status: 'Pending',
-            invitedAt: new Date().toISOString()
+            invited_at: new Date().toISOString()
           };
 
-          this.teamMembersSignal.update(members => [...members, newMember]);
+          this.rawMembers.update(members => [...members, newRawMember]);
 
           // Reset form
-          this.inviteForm.reset();
+          this.inviteForm.reset({ role: '' });
         },
         error: (err) => {
           console.error('❌ Error sending invitation:', err);
-          this.isSendingInvite.set(false);
-
           if (err.status === 400) {
             this.alertService.error(err.error?.message || 'Invalid email or role.');
           } else if (err.status === 409) {
@@ -182,54 +173,6 @@ export class TeamScreen implements OnInit {
     }
   }
 
-  refreshTeam(): void {
-    this.loadTeamMembers();
-  }
-
-  resendInvite(member: TeamMember): void {
-    if (member.status !== 'Pending') {
-      this.alertService.warning('Can only resend invitations to pending members');
-      return;
-    }
-
-    const roleId = this.getRoleIdFromName(member.roleName || member.role);
-    if (!roleId) {
-      this.alertService.warning('Invalid role for this member');
-      return;
-    }
-
-    const inviteData: TeamInviteRequest = {
-      email: member.email,
-      role_id: roleId
-    };
-
-    this.clientApi.inviteTeamMember(inviteData).subscribe({
-      next: (response) => {
-        console.log('✅ Invitation resent:', response);
-        this.alertService.success(`Invitation resent to ${member.email}`);
-      },
-      error: (err) => {
-        console.error('❌ Error resending invitation:', err);
-        this.alertService.error('Failed to resend invitation');
-      }
-    });
-  }
-
-  removeMember(member: TeamMember): void {
-    if (!confirm(`Are you sure you want to remove ${member.name} from the team?`)) {
-      return;
-    }
-
-    // Note: You'll need to add a deleteMember method to ClientApiService
-    // For now, we'll just remove from local state
-
-    this.teamMembersSignal.update(members =>
-      members.filter(m => m.id !== member.id)
-    );
-
-    this.alertService.success(`${member.name} has been removed from the team`);
-  }
-
   // Helper methods
   private extractNameFromEmail(email: string): string {
     if (!email) return 'Unknown';
@@ -238,19 +181,6 @@ export class TeamScreen implements OnInit {
       .split(/[._-]/)
       .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
       .join(' ');
-  }
-
-  private getRoleName(roleId: number | string | undefined): string {
-    if (!roleId) return 'Unknown';
-    const role = this.rolesSignal().find(r => r.id === Number(roleId));
-    return role?.name || 'Unknown';
-  }
-
-  private getRoleIdFromName(roleName: string): number | null {
-    const role = this.rolesSignal().find(r =>
-      r.name.toLowerCase() === roleName.toLowerCase()
-    );
-    return role?.id || null;
   }
 
   private normalizeStatus(status: string | undefined): string {
@@ -268,46 +198,7 @@ export class TeamScreen implements OnInit {
     return statusMap[status.toLowerCase()] || status;
   }
 
-  getStatusClass(status: string): string {
-    const statusClasses: { [key: string]: string } = {
-      'Active': 'status-active',
-      'Pending': 'status-pending',
-      'Inactive': 'status-inactive',
-      'Suspended': 'status-suspended'
-    };
-
-    return statusClasses[status] || 'status-unknown';
-  }
-
-  formatDate(dateString: string | undefined): string {
-    if (!dateString) return 'N/A';
-
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-NG', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    } catch (e) {
-      return 'N/A';
-    }
-  }
-
-  // Getters for form controls
-  get email() {
-    return this.inviteForm.get('email');
-  }
-
   get roleControl() {
     return this.inviteForm.get('role');
-  }
-
-  get activeMembers(): number {
-    return this.teamMembersSignal().filter(m => m.status === 'Active').length;
-  }
-
-  get pendingInvites(): number {
-    return this.teamMembersSignal().filter(m => m.status === 'Pending').length;
   }
 }
