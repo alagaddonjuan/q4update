@@ -68,7 +68,6 @@ export class RegisteredClients {
   getPricingTiers() {
     this.adminApi.getPricingTiers().subscribe({
       next: (tiers) => {
-        console.log(tiers, 'pricing tiers');
         this.pricingTiers.set(tiers || [])
       },
       error: (err) => {
@@ -87,12 +86,10 @@ export class RegisteredClients {
   }
 
   disableClient(client: ClientsResponse) {
-    console.log('Disabling client:', client);
     this.openConfirmationModal(client, 'disable');
   }
 
   enableClient(client: ClientsResponse) {
-    console.log('Enabling client:', client);
     this.openConfirmationModal(client, 'enable');
   }
 

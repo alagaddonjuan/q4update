@@ -69,7 +69,6 @@ export class MenuScreen implements OnInit {
 
     this.clientApi.getMenuDetails(menuId).subscribe({
       next: (response) => {
-        console.log('📋 Menu details loaded:', response);
 
         // Set menu name
         this.menuName.set(response.menu?.name || response.name || `Menu ${menuId}`);
@@ -156,11 +155,9 @@ export class MenuScreen implements OnInit {
       };
 
       if (editing && editing.id) {
-        console.log('✏️ Updating menu item:', itemData);
 
         this.clientApi.updateMenuItem(editing.id, itemData).subscribe({
           next: (response) => {
-            console.log('✅ Menu item updated successfully:', response);
             this.isSaving.set(false);
             this.alertService.success('Menu item updated successfully!');
 
@@ -174,11 +171,9 @@ export class MenuScreen implements OnInit {
           }
         });
       } else {
-        console.log('➕ Adding menu item:', itemData);
 
         this.clientApi.addMenuItem(menuId, itemData).subscribe({
           next: (response) => {
-            console.log('✅ Menu item added successfully:', response);
             this.isSaving.set(false);
             this.alertService.success('Menu item added successfully!');
 
@@ -204,7 +199,6 @@ export class MenuScreen implements OnInit {
   }
 
   addChild(parent: MenuItem): void {
-    console.log('➕ Adding child to:', parent.trigger);
     this.cancelEdit();
     this.parentForNewChild.set(parent);
 
@@ -233,7 +227,6 @@ export class MenuScreen implements OnInit {
   }
 
   editItem(item: MenuItem): void {
-    console.log('✏️ Editing item:', item.trigger);
     this.cancelEdit();
     this.editingItem.set(item);
 
@@ -253,8 +246,6 @@ export class MenuScreen implements OnInit {
     if (!confirm(`Are you sure you want to delete "${item.trigger}"? This will also delete all child items.`)) {
       return;
     }
-
-    console.log('🗑️ Deleting item:', item.trigger);
 
     this.isDeleting.update(state => ({ ...state, [item.id!]: true }));
 
@@ -282,14 +273,10 @@ export class MenuScreen implements OnInit {
       return;
     }
 
-    console.log('🗑️ Deleting child item:', child.trigger);
-
     this.isDeleting.update(state => ({ ...state, [child.id!]: true }));
 
     this.clientApi.deleteMenuItem(child.id).subscribe({
       next: (response) => {
-        console.log('✅ Child menu item deleted successfully:', response);
-
         // Remove child from parent
         this.menuItemsSignal.update(items =>
           items.map(item => {

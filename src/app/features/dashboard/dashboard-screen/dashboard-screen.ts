@@ -69,7 +69,6 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
         // Robustly handle { success: true, data: { ... } } or direct response
         const data = response.data || response;
 
-        console.log('📊 Dashboard processed data:', data);
         this.dashboardData.set(data);
         this.updateStats(data);
         this.updateActivities(data);

@@ -132,14 +132,12 @@ export class AirtimeLogs {
   previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
-      console.log('Previous page:', this.currentPage);
       // Add your pagination logic here
     }
   }
 
   nextPage() {
     this.currentPage++;
-    console.log('Next page:', this.currentPage);
     // Add your pagination logic here
   }
 }

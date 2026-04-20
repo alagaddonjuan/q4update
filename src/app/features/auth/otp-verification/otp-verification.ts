@@ -129,7 +129,6 @@ export class OtpVerification implements OnInit, OnDestroy {
       this.errorMessage.set('Please enter the complete OTP.');
       return;
     }
-    console.log('Verifying OTP:', this.otpCode);
     // Clear previous messages
     this.errorMessage.set('');
     this.successMessage.set('');
@@ -142,7 +141,6 @@ export class OtpVerification implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (response) => {
-          console.log('OTP verification successful:', response);
           this.successMessage.set('Verification successful! Redirecting...');
 
           // Store auth data if returned in response
@@ -173,7 +171,6 @@ export class OtpVerification implements OnInit, OnDestroy {
    */
   resendOtp(): void {
     if (!this.canResend()) {
-      console.log('Please wait before resending OTP.');
       return;
     }
 
@@ -191,7 +188,6 @@ export class OtpVerification implements OnInit, OnDestroy {
     //   )
     //   .subscribe({
     //     next: (response) => {
-    //       console.log('OTP resent successfully:', response);
     //       this.successMessage.set('New OTP sent successfully!');
     //       this.resendCountdown.set(60); // Reset countdown
     //       this.startResendCountdown();

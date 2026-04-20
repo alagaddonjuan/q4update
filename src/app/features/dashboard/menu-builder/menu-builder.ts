@@ -61,7 +61,6 @@ export class MenuBuilder implements OnInit {
 
     this.clientApi.getUssdMenus().subscribe({
       next: (menus) => {
-        console.log('📋 USSD Menus loaded:', menus);
 
         const transformedMenus = menus.map(menu => ({
           id: menu.id || menu.menu_id,
@@ -94,7 +93,6 @@ export class MenuBuilder implements OnInit {
   }
 
   editMenu(menu: UssdMenu): void {
-    console.log('✏️ Editing menu:', menu);
     // Navigate to edit page with menu ID
     this.router.navigate(['/user/menus', menu.id, 'edit']);
   }
@@ -193,8 +191,6 @@ export class MenuBuilder implements OnInit {
     if (!confirm(`Are you sure you want to delete "${menu.name}"? This action cannot be undone.`)) {
       return;
     }
-
-    console.log('🗑️ Deleting menu:', menu.name);
 
     // TODO: Implement delete API call
     // this.clientApi.deleteUssdMenu(menu.id).subscribe(...)

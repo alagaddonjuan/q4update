@@ -17,7 +17,6 @@ function historyApiFallback(req, res, next) {
   
   // If it's not a static file, API call, asset, or exact route, it's an Angular route
   if (!isStaticFile && !isApiCall && !isAsset && !isExact) {
-    console.log(`[History API Fallback] Routing ${req.url} to index.html`);
     
     // Read index.html and serve it
     try {

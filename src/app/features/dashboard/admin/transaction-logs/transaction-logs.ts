@@ -28,7 +28,6 @@ export class TransactionLogs {
     this.isLoading.set(true);
     this.logService.getStats().subscribe({
       next: (logs) => {
-        console.log('Transaction Logs:', logs);
         // The API returns a single LogsResponse object which contains the transactions array.
         // We also check if logs and logs.transactions exist to be safe.
         // this.transactions = logs?.transactions || [];
@@ -45,14 +44,12 @@ export class TransactionLogs {
   previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
-      console.log('Previous page:', this.currentPage);
       // Add your pagination logic here
     }
   }
 
   nextPage() {
     this.currentPage++;
-    console.log('Next page:', this.currentPage);
     // Add your pagination logic here
   }
 }

@@ -127,7 +127,6 @@ export class Login implements OnInit {
   }
 
   signInWithGoogle(): void {
-    console.log('Sign in with Google clicked');
     // Handle Google sign-in logic here
   }
   // Helper method to mark all form controls as touched

@@ -39,7 +39,6 @@ export class ForgotPassword implements OnInit {
       this.forgotPasswordForm.get('email')?.markAsTouched();
       return;
     }
-    console.log()
 
     const email = this.forgotPasswordForm.value.email;
 
@@ -55,7 +54,6 @@ export class ForgotPassword implements OnInit {
       )
       .subscribe({
         next: (response) => {
-          console.log('Password reset email sent successfully:', response);
 
           // Store the submitted email for display in success message
           this.submittedEmail.set(email);
@@ -98,7 +96,6 @@ export class ForgotPassword implements OnInit {
   }
 
   goBack(): void {
-    console.log('Navigate back to sign in');
     this.router.navigate(['/auth/login']);
   }
 

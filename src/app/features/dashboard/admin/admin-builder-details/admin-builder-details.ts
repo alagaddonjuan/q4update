@@ -69,7 +69,6 @@ export class AdminBuilderDetails {
 
     this.clientApi.getMenuDetails(menuId).subscribe({
       next: (response) => {
-        console.log('📋 Menu details loaded:', response);
 
         // Set menu name
         this.menuName.set(response.menu?.name || response.name || `Menu ${menuId}`);
@@ -156,11 +155,9 @@ export class AdminBuilderDetails {
       };
 
       if (editing && editing.id) {
-        console.log('✏️ Updating menu item:', itemData);
 
         this.clientApi.updateMenuItem(editing.id, itemData).subscribe({
           next: (response) => {
-            console.log('✅ Menu item updated successfully:', response);
             this.isSaving.set(false);
             this.alertService.success('Menu item updated successfully!');
 
@@ -174,11 +171,9 @@ export class AdminBuilderDetails {
           }
         });
       } else {
-        console.log('➕ Adding menu item:', itemData);
 
         this.clientApi.addMenuItem(menuId, itemData).subscribe({
           next: (response) => {
-            console.log('✅ Menu item added successfully:', response);
             this.isSaving.set(false);
             this.alertService.success('Menu item added successfully!');
 

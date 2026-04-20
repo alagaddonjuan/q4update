@@ -39,12 +39,10 @@ export class AdminBuilder {
     this.isLoading.set(true);
     this.adminApi.ussdMenuBuilder().subscribe({
       next: (response) => {
-        console.log('📋 USSD Menus loaded:', response);
         this.menusSignal.set(response);
         this.isLoading.set(false);
       },
       error: (error) => {
-        console.error('❌ Error fetching USSD Menus:', error);
         this.alertService.error('Failed to fetch USSD Menus');
         this.isLoading.set(false);
       }
@@ -117,7 +115,6 @@ export class AdminBuilder {
   }
 
   openMenuBuilder(menu: adminUssdMenuBuilderResponse): void {
-    console.log('✏️ Opening builder for menu:', menu);
     // Navigate to builder page with menu ID
     this.router.navigate(['/admin/menu-builder', menu.id]);
   }
