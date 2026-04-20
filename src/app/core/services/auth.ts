@@ -34,7 +34,12 @@ export class AuthService {
   login(data: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.baseUrl}/api/auth/login`, data).pipe(
       tap(response => {
-        if (response.token && response.user) {
+        // Only store authentication data if 2FA is not required or if the 2FA token
+        // has already been provided in this request. This prevents a user from being
+        // considered "logged in" during the 2FA verification step.
+        const is2FAPending = (response.requires_2fa || response.user?.is_2fa_enabled === 1) && !data.token;
+
+        if (response.token && response.user && !is2FAPending) {
           this.setAuthData(response.token, response.user.is_admin === 1, response.user);
         }
       })
