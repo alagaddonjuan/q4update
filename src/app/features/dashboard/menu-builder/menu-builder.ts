@@ -82,28 +82,6 @@ export class MenuBuilder implements OnInit {
 
         if (err.status === 404) {
           this.alertService.error('USSD menu feature is not available yet.');
-
-          // Fallback data for development
-          this.menusSignal.set([
-            {
-              id: 1,
-              name: 'Main Menu',
-              description: 'Default main menu',
-              status: 'Active',
-              isActive: true,
-              itemsCount: 5,
-              createdAt: new Date().toISOString()
-            },
-            {
-              id: 2,
-              name: 'Modern Lottery Menu',
-              description: 'Lottery services menu',
-              status: 'Inactive',
-              isActive: false,
-              itemsCount: 3,
-              createdAt: new Date().toISOString()
-            }
-          ]);
         } else if (err.status === 0) {
           this.alertService.error('Cannot connect to server. Please check if the API is running.');
         } else {

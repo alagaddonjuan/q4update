@@ -14,13 +14,6 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly baseUrl = environment.apiUrl;
-  // private readonly baseUrl: string;
-
-  // constructor() {
-  //   this.baseUrl = environment.apiUrl
-  //     ? `${environment.apiUrl}/auth`
-  //     : '/auth';
-  // }
 
   // Signals for reactive state
   private readonly isAdminSignal = signal<boolean>(this.checkAdminStatus());
@@ -74,7 +67,7 @@ export class AuthService {
     this.currentUserSignal.set(user);
   }
 
-  private clearAuthData(): void {
+  clearAuthData(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('isAdmin');
     localStorage.removeItem('pageTitle');

@@ -44,7 +44,11 @@ export class Login implements OnInit {
   ngOnInit(): void {
     // Redirect if already authenticated
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/user']);
+      if (this.authService.isAdmin()) {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/user']);
+      }
       return;
     }
   }

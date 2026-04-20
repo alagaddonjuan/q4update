@@ -1,0 +1,168 @@
+<div class="min-h-screen p-4">
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="flex justify-center items-center py-12">
+      <div class="loader"></div>
+      <span class="ml-4 text-gray-600 font-medium">Loading USSD menus...</span>
+    </div>
+  } @else {
+    <div class="max-w-7xl mx-auto">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">USSD Builder</h1>
+      <p class="text-gray-600 mb-6">Manage and view all active USSD menus across clients.</p>
+
+      <!-- Menus Card -->
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-semibold text-teal-700">Active USSD Menus</h2>
+          <button
+            (click)="refreshMenus()"
+            class="bg-teal-700 hover:bg-teal-800 text-white font-medium py-2 px-4 rounded-md transition-colors"
+          >
+            Refresh
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-gray-200 bg-gray-50">
+                <th class="text-left py-3 px-4 text-gray-600 font-medium">ID</th>
+                <th class="text-left py-3 px-4 text-gray-600 font-medium">Client</th>
+                <th class="text-left py-3 px-4 text-gray-600 font-medium">Menu Name</th>
+                <th class="text-left py-3 px-4 text-gray-600 font-medium">USSD Code</th>
+                <th class="text-left py-3 px-4 text-gray-600 font-medium">Status (Toggle)</th>
+                <th class="text-left py-3 px-4 text-gray-600 font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (menu of menus; track menu.id) {
+                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                  <td class="py-3 px-4 text-gray-700 font-medium">#{{ menu.id }}</td>
+                  <td class="py-3 px-4 text-blue-600 hover:text-blue-800">
+                    {{ menu.client_name }}
+                  </td>
+                  <td class="py-3 px-4 text-gray-700">{{ menu.menu_name }}</td>
+                  <td class="py-3 px-4">
+                    <span class="inline-block bg-gray-600 text-white text-sm px-3 py-1 rounded">
+                      {{ menu.ussd_code || 'No Code' }}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        [checked]="menu.is_active === 1"
+                        (change)="toggleMenuStatus(menu)"
+                        [disabled]="isMenuToggling(menu.id)"
+                        class="w-4 h-4 rounded cursor-pointer"
+                      />
+                      <span
+                        class="text-sm font-medium"
+                        [ngClass]="{
+                          'text-green-600': menu.is_active === 1,
+                          'text-gray-500': menu.is_active === 0,
+                        }"
+                      >
+                        {{ getStatusLabel(menu.is_active) }}
+                      </span>
+                    </label>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="flex gap-2">
+                      <button
+                        (click)="openMenuBuilder(menu)"
+                        class="bg-cyan-500 hover:bg-cyan-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors"
+                      >
+                        ⭐ Builder
+                      </button>
+                      <button
+                        (click)="openDeleteModal(menu)"
+                        [disabled]="isMenuToggling(menu.id)"
+                        class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-1 px-4 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="text-center py-8 text-gray-500">No USSD menus found.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    @if (showDeleteModal() && selectedMenuForDelete()) {
+      <div
+        class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      >
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+          <!-- Modal Header -->
+          <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h3 class="text-xl font-semibold text-gray-800">Delete USSD Menu</h3>
+            <button
+              (click)="closeDeleteModal()"
+              class="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="p-6 space-y-4">
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p class="text-red-800 font-medium">Warning</p>
+              <p class="text-red-700 text-sm mt-1">
+                Are you sure you want to delete the menu
+                <span class="font-semibold">"{{ selectedMenuForDelete()?.menu_name }}"</span>? This
+                action cannot be undone.
+              </p>
+            </div>
+            <div class="space-y-2">
+              <p class="text-sm text-gray-600">
+                <span class="font-medium">Client:</span> {{ selectedMenuForDelete()?.client_name }}
+              </p>
+              <p class="text-sm text-gray-600">
+                <span class="font-medium">USSD Code:</span>
+                {{ selectedMenuForDelete()?.ussd_code || 'N/A' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="flex justify-end gap-3 p-6 border-t border-gray-200">
+            <button
+              (click)="closeDeleteModal()"
+              class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-md transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              (click)="deleteMenu()"
+              [disabled]="isMenuToggling(selectedMenuForDelete()!.id)"
+              class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              @if (isMenuToggling(selectedMenuForDelete()!.id)) {
+                Deleting...
+              } @else {
+                Delete Menu
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>
