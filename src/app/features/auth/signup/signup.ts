@@ -61,11 +61,8 @@ export class Signup implements OnInit {
         password: formValue.password
       };
 
-      console.log('📤 Registering user:', { name: registerData.name, email: registerData.email, password: registerData.password, });
-
       this.authService.register(registerData).subscribe({
         next: (response) => {
-          console.log('✅ Registration successful:', response);
           this.isLoading.set(false);
           this.successMessage.set('Account created successfully! Redirecting to login...');
 
@@ -104,7 +101,6 @@ export class Signup implements OnInit {
   }
 
   signInWithGoogle(): void {
-    console.log('🔐 Google sign-in clicked');
     // TODO: Implement Google OAuth sign-in logic
     this.errorMessage.set('Google sign-in not yet implemented. Coming soon!');
 

@@ -68,7 +68,6 @@ export class ServicesScreen implements OnInit {
 
     this.clientApi.getDashboard().subscribe({
       next: (data) => {
-        console.log('📊 Dashboard data loaded:', data);
 
         // Transform SMS logs
         // if (data.sms_logs && data.sms_logs.length > 0) {
@@ -130,7 +129,6 @@ export class ServicesScreen implements OnInit {
 
       this.clientApi.sendSms(smsData).subscribe({
         next: (response) => {
-          console.log('✅ SMS sent successfully:', response);
           this.isSendingSMS.set(false);
           this.alertService.success('SMS sent successfully!');
 
@@ -182,7 +180,6 @@ export class ServicesScreen implements OnInit {
 
       this.clientApi.sendAirtime(airtimeData).subscribe({
         next: (response) => {
-          console.log('✅ Airtime sent successfully:', response);
           this.isSendingAirtime.set(false);
           this.alertService.success('Airtime sent successfully!');
 
@@ -234,7 +231,6 @@ export class ServicesScreen implements OnInit {
 
     this.clientApi.exportSmsLogs().subscribe({
       next: (blob) => {
-        console.log('✅ SMS logs exported');
         this.downloadBlob(blob, `sms-logs-${Date.now()}.csv`);
         this.isExportingSMS.set(false);
         this.alertService.success('logs exported successfully!');
@@ -263,7 +259,6 @@ export class ServicesScreen implements OnInit {
 
     this.clientApi.exportAirtimeLogs().subscribe({
       next: (blob) => {
-        console.log('✅ Airtime logs exported');
         this.downloadBlob(blob, `airtime-logs-${Date.now()}.csv`);
         this.isExportingAirtime.set(false);
         this.alertService.success('logs exported successfully!');

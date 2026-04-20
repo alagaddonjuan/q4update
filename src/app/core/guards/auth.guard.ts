@@ -54,3 +54,18 @@ export const clientGuard: CanActivateFn = () => {
 export const authChildGuard: CanActivateChildFn = (childRoute, state) => {
   return authGuard(childRoute, state);
 };
+
+/**
+ * Guard for wildcard routes to handle mistyped URLs.
+ * If authenticated, it logs the user out (clears storage) and redirects to login.
+ */
+export const wildcardGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (auth.isAuthenticated()) {
+    auth.clearAuthData();
+  }
+
+  return router.createUrlTree(['/auth/login']);
+};

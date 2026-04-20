@@ -97,7 +97,6 @@ export class ProfileScreen implements OnInit {
         console.error('❌ Error loading profile:', err);
 
         if (err.status === 404) {
-          console.log('⚠️ Using fallback profile data');
           const user = this.authService.currentUser();
           this.profileForm.patchValue({
             fullName: user?.name || 'User',
@@ -160,11 +159,8 @@ export class ProfileScreen implements OnInit {
         updateData.password = formValue.password;
       }
 
-      console.log('💾 Updating profile:', updateData);
-
       this.clientApi.updateProfile(updateData).subscribe({
         next: (response) => {
-          console.log('✅ Profile updated successfully:', response);
           this.isSavingProfile.set(false);
           this.profileSuccess.set('Profile updated successfully!');
 
@@ -178,7 +174,6 @@ export class ProfileScreen implements OnInit {
           this.isSavingProfile.set(false);
 
           if (err.status === 404) {
-            console.log('⚠️ API not available. Showing success locally.');
             this.profileSuccess.set('Profile updated locally (API not available)');
             setTimeout(() => this.profileSuccess.set(null), 5000);
           } else if (err.status === 400) {
@@ -284,7 +279,6 @@ export class ProfileScreen implements OnInit {
 
     this.clientApi.deleteApiKey(key.id).subscribe({
       next: (response) => {
-        console.log('✅ API key deleted successfully:', response);
 
         this.apiKeysSignal.update(keys => keys.filter((_, i) => i !== index));
         this.alertService.success(`API key "${key.name}" deleted successfully`);

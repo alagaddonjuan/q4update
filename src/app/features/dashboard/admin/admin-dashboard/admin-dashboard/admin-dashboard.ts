@@ -1,9 +1,12 @@
 import { AdminStats, ManualTransaction, PricingTierPrices, PricingTiersResponse, SendAnnouncementRequest } from './../../../../../core/models/api.model';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, WritableSignal, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AdminApi } from '../../../../../core/services/admin-api';
 import { AlertService } from '../../../../../core/services/alert.service';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -12,11 +15,14 @@ import { AlertService } from '../../../../../core/services/alert.service';
   styleUrl: './admin-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminDashboard {
+export class AdminDashboard implements OnInit, AfterViewInit, OnDestroy {
 
   adminApi = inject(AdminApi);
   alertService = inject(AlertService);
   fb = inject(FormBuilder);
+
+  @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
+  chart: Chart | null = null;
 
   // Modal state
   showEditPricesModal = signal(false);
@@ -54,22 +60,116 @@ export class AdminDashboard {
   // Pricing Tiers
   pricingTiers = signal<PricingTiersResponse[]>([]);
   adminStats: WritableSignal<AdminStats | null> = signal(null);
+  isStatsLoading = signal(false);
 
   ngOnInit() {
     this.getStats();
     this.getPricingTiers();
   }
 
+  ngAfterViewInit(): void {
+    // Chart initialized after data load
+  }
+
+  ngOnDestroy(): void {
+    if (this.chart) {
+      this.chart.destroy();
+    }
+  }
+
   getStats() {
+    this.isStatsLoading.set(true);
     this.adminApi.getStats().subscribe({
       next: (stats) => {
         this.adminStats.set(stats);
+        this.isStatsLoading.set(false);
+
+        // Create chart after data is loaded
+        setTimeout(() => {
+          this.createChart(stats as any);
+        }, 100);
       },
       error: (err) => {
+        this.isStatsLoading.set(false);
         console.error('Error fetching stats:', err);
         this.alertService.error(`Failed to fetch admin stats: ${err.message || err}`);
       }
     })
+  }
+
+  createChart(data: any): void {
+    if (!this.chartCanvas) return;
+
+    const ctx = this.chartCanvas.nativeElement.getContext('2d');
+    if (ctx) {
+      if (this.chart) {
+        this.chart.destroy();
+      }
+
+      const chartLabels = data?.chartLabels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const ussdValues = data?.ussdChartValues || [0, 0, 0, 0, 0, 0, 0];
+      const smsValues = data?.smsChartValues || [0, 0, 0, 0, 0, 0, 0];
+
+      this.chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: chartLabels,
+          datasets: [
+            {
+              label: 'USSD Sessions',
+              data: ussdValues,
+              borderColor: '#14b8a6',
+              backgroundColor: 'rgba(20, 184, 166, 0.1)',
+              fill: true,
+              tension: 0.4,
+              pointRadius: 4,
+              pointBackgroundColor: '#14b8a6'
+            },
+            {
+              label: 'SMS Sent',
+              data: smsValues,
+              borderColor: '#3b82f6',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              fill: true,
+              tension: 0.4,
+              pointRadius: 4,
+              pointBackgroundColor: '#3b82f6'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top'
+            },
+            tooltip: {
+              backgroundColor: '#1f2937',
+              padding: 12,
+              titleColor: '#fff',
+              bodyColor: '#fff',
+              borderColor: '#14b8a6',
+              borderWidth: 1
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: '#f3f4f6'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
+    }
   }
 
   addCredit() {

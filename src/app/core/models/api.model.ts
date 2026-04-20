@@ -42,11 +42,11 @@ export interface DashboardData {
   api_key: string;
   is_2fa_enabled: number;
   transactions?: any[];
-  stats: stats;
+  stats: ClientDashboardStats;
 
 }
 
-export interface stats {
+export interface ClientDashboardStats {
   users: number;
   sms: number;
   revenue: string;
@@ -55,7 +55,7 @@ export interface stats {
 export interface DashboardDataResponse {
   role: string;
   client: Client;
-  stats: Stats;
+  stats: Stats & { users?: number; revenue?: string }; // Allow for both structures during transition
   chartLabels: string[];
   ussdChartValues: number[];
   smsChartValues: number[];
@@ -147,7 +147,7 @@ export interface SendAnnouncementRequest {
 }
 
 export interface AdminStats {
-  stats: Stats;
+  stats: AdminDashboardStats;
   recentTransactions: RecentTransaction[];
 }
 
@@ -177,7 +177,7 @@ export interface BillingHistory {
   created_at: Date;
 }
 
-export interface Stats {
+export interface AdminDashboardStats {
   users: number;
   sms: number;
   revenue: string;
@@ -310,6 +310,16 @@ export interface Activate2FARequest {
 
 export interface Disable2FARequest {
   token: string;
+}
+
+export interface adminUssdMenuBuilderResponse {
+  id: number;
+  client_id: number;
+  menu_name: string;
+  is_active: number;
+  is_archived: number;
+  client_name: string;
+  ussd_code: null | string;
 }
 
 // Pagination Models

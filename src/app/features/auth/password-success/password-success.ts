@@ -17,7 +17,6 @@ export class PasswordSuccess {
 
   // navigate to login page
   returnToLogin(): void {
-    console.log('Navigating back to Login page...');
     this.router.navigate(['/login']);
   }
 }

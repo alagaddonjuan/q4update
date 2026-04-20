@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { adminGuard, authGuard } from './core/guards/auth.guard';
+import { adminGuard, authGuard, wildcardGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     {
@@ -58,12 +58,21 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/dashboard/admin/ussd-logs/ussd-logs').then(m => m.UssdLogs)
             },
             { path: 'profile', loadComponent: () => import('./features/dashboard/profile-screen/profile-screen').then(m => m.ProfileScreen) },
+            {
+                path: 'ussd-builder',
+                loadComponent: () => import('./features/dashboard/admin/admin-builder/admin-builder').then(m => m.AdminBuilder)
+            },
+            {
+                path: 'menu-builder/:id',
+                loadComponent: () => import('./features/dashboard/admin/admin-builder-details/admin-builder-details').then(m => m.AdminBuilderDetails)
+            }
 
         ]
     },
     {
         path: '**',
-        redirectTo: ''
+        canActivate: [wildcardGuard],
+        loadComponent: () => import('./features/auth/login/login').then(m => m.Login)
     }
 
 ];

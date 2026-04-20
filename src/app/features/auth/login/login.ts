@@ -44,7 +44,11 @@ export class Login implements OnInit {
   ngOnInit(): void {
     // Redirect if already authenticated
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/user']);
+      if (this.authService.isAdmin()) {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/user']);
+      }
       return;
     }
   }
@@ -123,7 +127,6 @@ export class Login implements OnInit {
   }
 
   signInWithGoogle(): void {
-    console.log('Sign in with Google clicked');
     // Handle Google sign-in logic here
   }
   // Helper method to mark all form controls as touched

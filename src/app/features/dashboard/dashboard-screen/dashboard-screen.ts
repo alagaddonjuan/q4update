@@ -65,11 +65,13 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
     this.loading.set(true);
 
     this.clientApi.getDashboard().subscribe({
-      next: (data) => {
-        console.log('📊 Dashboard data loaded:', data);
+      next: (response: any) => {
+        // Robustly handle { success: true, data: { ... } } or direct response
+        const data = response.data || response;
+
         this.dashboardData.set(data);
         this.updateStats(data);
-        this.updateActivities(data as any);
+        this.updateActivities(data);
         this.loading.set(false);
 
         // Create chart after data is loaded
@@ -87,8 +89,11 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
 
   updateStats(data: DashboardDataResponse): void {
     const client = data.client || {};
-    const stats = data.stats || { totalSmsSent: 0, sms: 0 };
+    const stats = data.stats || {};
     const ussdTotal = (data.ussdChartValues || []).reduce((sum, val) => sum + val, 0);
+
+    // Map values based on what the API actually sends (sms vs totalSmsSent)
+    const totalSms = stats.totalSmsSent ?? stats.sms ?? 0;
 
     this.stats = [
       {
@@ -100,7 +105,7 @@ export class DashboardScreen implements OnInit, AfterViewInit, OnDestroy {
       {
         icon: '/assets/user/message-icon.png',
         title: 'Total SMS sent',
-        value: `${this.formatNumber(stats.totalSmsSent || 0)} SMS`,
+        value: `${this.formatNumber(totalSms)} SMS`,
         key: 'sms_count'
       },
       {

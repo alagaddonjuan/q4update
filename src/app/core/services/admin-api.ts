@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AdminStats, ClientsResponseWrapper, Enable2FARequest, LogsResponse, ManualTopupRequest, ManualTransaction, PricingTierPrices, PricingTiersResponse, SendAnnouncementRequest, UpdateClientDetails } from '../models/api.model';
+import { AdminStats, adminUssdMenuBuilderResponse, ClientsResponseWrapper, Enable2FARequest, LogsResponse, ManualTopupRequest, ManualTransaction, PricingTierPrices, PricingTiersResponse, SendAnnouncementRequest, UpdateClientDetails } from '../models/api.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -80,6 +80,14 @@ export class AdminApi {
 
   enable2fa(data: Enable2FARequest): Observable<any> {
     return this.http.post(`${this.baseUrl}api/client/2fa/generate`, data);
+  }
+
+  ussdMenuBuilder(): Observable<adminUssdMenuBuilderResponse[]> {
+    return this.http.get<adminUssdMenuBuilderResponse[]>(`${this.baseUrl}/api/admin/ussd-menus`);
+  }
+
+  deleteAdminMenuItem(itemId: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/api/client/ussd/menus/${itemId}`);
   }
 
 }

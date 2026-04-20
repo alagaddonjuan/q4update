@@ -1,10 +1,10 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ClientApiService } from '../../../core/services/client-api';
-import { MenuItemRequest } from '../../../core/models/api.model';
-import { AlertService } from '../../../core/services/alert.service';
+import { MenuItemRequest } from '../../../../core/models/api.model';
+import { AlertService } from '../../../../core/services/alert.service';
+import { ClientApiService } from '../../../../core/services/client-api';
+import { CommonModule } from '@angular/common';
 
 interface MenuItem {
   id?: number;
@@ -16,13 +16,13 @@ interface MenuItem {
 }
 
 @Component({
-  selector: 'app-menu-screen',
-  standalone: true,
+  selector: 'app-admin-builder-details',
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './menu-screen.html',
-  styleUrl: './menu-screen.css'
+  templateUrl: './admin-builder-details.html',
+  styleUrl: './admin-builder-details.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MenuScreen implements OnInit {
+export class AdminBuilderDetails {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
@@ -258,7 +258,6 @@ export class MenuScreen implements OnInit {
         this.isDeleting.update(state => ({ ...state, [item.id!]: false }));
       },
       error: (err) => {
-        console.error('❌ Error deleting menu item:', err);
         this.isDeleting.update(state => ({ ...state, [item.id!]: false }));
         this.alertService.error(err.error?.message || 'Failed to delete menu item. Please try again.');
       }
@@ -294,7 +293,6 @@ export class MenuScreen implements OnInit {
         this.isDeleting.update(state => ({ ...state, [child.id!]: false }));
       },
       error: (err) => {
-        console.error('❌ Error deleting child menu item:', err);
         this.isDeleting.update(state => ({ ...state, [child.id!]: false }));
         this.alertService.error(err.error?.message || 'Failed to delete menu item. Please try again.');
       }
@@ -302,7 +300,7 @@ export class MenuScreen implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/user/menu-builder']);
+    this.router.navigate(['/admin/ussd-builder']);
   }
 
   // Helper methods for template

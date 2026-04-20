@@ -82,7 +82,6 @@ export class BillingScreen implements OnInit {
 
     paymentObservable.subscribe({
       next: (response) => {
-        console.log('Payment initialized:', response);
 
         // If the API returns a payment URL, redirect to it
         if (response.authorization_url || response.checkout_url) {

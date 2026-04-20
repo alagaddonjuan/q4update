@@ -59,6 +59,26 @@
     </div>
   </div>
 
+  <!-- Usage Statistics Chart -->
+  <div class="bg-white rounded-lg shadow-sm p-6 mb-8 relative">
+    <div class="mb-4">
+      <h2 class="text-lg font-semibold text-gray-800">Usage Statistics</h2>
+    </div>
+
+    @if (isStatsLoading()) {
+      <div
+        class="absolute inset-0 flex flex-col items-center justify-center bg-white/60 z-10 rounded-lg"
+      >
+        <div class="spinner mb-2"></div>
+        <p class="text-sm text-gray-500 font-medium">Loading statistics...</p>
+      </div>
+    }
+
+    <div class="h-64 md:h-80 transition-opacity duration-300" [class.opacity-20]="isStatsLoading()">
+      <canvas #chartCanvas></canvas>
+    </div>
+  </div>
+
   <!-- Main Content Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- Left Column -->
@@ -105,29 +125,29 @@
             </thead>
             <tbody>
               @for (tier of pricingTiers(); track $index) {
-              <tr class="border-b border-gray-100">
-                <td class="py-3 px-2 text-sm text-gray-700">{{ tier.tier_name }}</td>
-                <td class="py-3 px-2">
-                  <!-- <button
+                <tr class="border-b border-gray-100">
+                  <td class="py-3 px-2 text-sm text-gray-700">{{ tier.tier_name }}</td>
+                  <td class="py-3 px-2">
+                    <!-- <button
                     (click)="editPrices()"
                     class="bg-cyan-500 hover:bg-cyan-600 text-white text-sm px-4 py-1.5 rounded transition-colors"
                   >
                     Edit Prices
                   </button> -->
-                  <button
-                    (click)="openEditPricesModal(tier)"
-                    class="bg-cyan-500 hover:bg-cyan-600 text-white text-sm px-4 py-1.5 rounded transition-colors"
-                  >
-                    Edit Prices
-                  </button>
-                </td>
-              </tr>
+                    <button
+                      (click)="openEditPricesModal(tier)"
+                      class="bg-cyan-500 hover:bg-cyan-600 text-white text-sm px-4 py-1.5 rounded transition-colors"
+                    >
+                      Edit Prices
+                    </button>
+                  </td>
+                </tr>
               } @empty {
-              <tr>
-                <td colspan="12" class="text-center py-12 text-gray-500">
-                  No pricing tiers found.
-                </td>
-              </tr>
+                <tr>
+                  <td colspan="12" class="text-center py-12 text-gray-500">
+                    No pricing tiers found.
+                  </td>
+                </tr>
               }
             </tbody>
           </table>
@@ -231,69 +251,69 @@
 
   <!-- Edit Prices Modal -->
   @if (showEditPricesModal()) {
-  <div
-    class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-  >
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full" [formGroup]="editPricesForm">
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between p-6 border-b border-gray-200">
-        <h3 class="text-xl font-semibold text-gray-800">
-          Edit Prices for {{ selectedTier()?.tier_name }}
-        </h3>
-        <button
-          (click)="closeEditPricesModal()"
-          class="text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
-
-      <!-- Modal Body -->
-      <div class="p-6 space-y-6">
-        <div>
-          <label class="block text-sm text-gray-700 mb-2">SMS Price (in Tokens)</label>
-          <input
-            type="number"
-            formControlName="sms_price"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm text-gray-700 mb-2"
-            >USSD Cost Multiplier (e.g., 3 for 3x)</label
+    <div
+      class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+    >
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full" [formGroup]="editPricesForm">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+          <h3 class="text-xl font-semibold text-gray-800">
+            Edit Prices for {{ selectedTier()?.tier_name }}
+          </h3>
+          <button
+            (click)="closeEditPricesModal()"
+            class="text-gray-400 hover:text-gray-600 transition-colors"
           >
-          <input
-            type="number"
-            formControlName="ussd_multiplier"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-          />
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
         </div>
-      </div>
 
-      <!-- Modal Footer -->
-      <div class="flex justify-end gap-3 p-6 border-t border-gray-200">
-        <button
-          (click)="closeEditPricesModal()"
-          class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-md transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          (click)="savePrices()"
-          class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
-        >
-          Save Prices
-        </button>
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6">
+          <div>
+            <label class="block text-sm text-gray-700 mb-2">SMS Price (in Tokens)</label>
+            <input
+              type="number"
+              formControlName="sms_price"
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-700 mb-2"
+              >USSD Cost Multiplier (e.g., 3 for 3x)</label
+            >
+            <input
+              type="number"
+              formControlName="ussd_multiplier"
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            />
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="flex justify-end gap-3 p-6 border-t border-gray-200">
+          <button
+            (click)="closeEditPricesModal()"
+            class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-md transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            (click)="savePrices()"
+            class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
+          >
+            Save Prices
+          </button>
+        </div>
       </div>
     </div>
-  </div>
   }
 </div>
